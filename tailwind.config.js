@@ -9,24 +9,24 @@ export default {
     extend: {
       colors: {
         broadcast: {
-          darkest: '#131518',     // Warm charcoal dark background
-          panel: '#181b20',       // Warm slate panel
-          surface: '#20242b',     // Warm gray surface
-          surfaceHover: '#282e37',
-          border: '#2a303a',      // Soft, calm border
-          borderLight: '#38414e',
-          textMuted: '#8b94a0',   // Calm readable muted text
-          textPrimary: '#e2e6ec', // Warm off-white, anti-glare
-          accent: '#14b8a6',      // Soft teal (foco / selección)
-          accentHover: '#0d9488',
-          accentMuted: '#134e4a',
-          amber: '#d97706',       // Soft amber (warnings)
-          amberMuted: '#78350f',
-          danger: '#b94a3b',      // Soft terracotta (bloqueantes / errores)
-          dangerMuted: '#5c221b',
-          success: '#4d8b68',     // Soft moss green (validado / confirmado)
-          successMuted: '#1c3b28',
-          purple: '#71717a',      // Slate neutral
+          darkest: '#1A1917',     // Fondo general cálido
+          panel: '#201F1C',       // Fondo secundario
+          surface: '#262420',     // Panel
+          surfaceHover: '#2C2925',// Superficie elevada
+          border: '#39352F',      // Bordes suaves y tenues
+          borderLight: '#48433C',
+          textMuted: '#817C74',   // Texto tenue
+          textSecondary: '#AAA49A',// Texto secundario
+          textPrimary: '#DDD8CF', // Texto principal cálido
+          accent: '#568F87',      // Teal apagado (foco, playhead, selección activa)
+          accentHover: '#467770',
+          accentMuted: '#2B423F',
+          accentWave: '#759E96',  // Onda seleccionada
+          waveBg: '#201F1C',      // Fondo waveform
+          waveBar: '#77736C',     // Barra onda normal
+          amber: '#C28B38',       // Advertencia cálida
+          danger: '#B85D43',      // Terracota suave
+          success: '#628A5B',     // Verde musgo suave
         }
       },
       fontFamily: {

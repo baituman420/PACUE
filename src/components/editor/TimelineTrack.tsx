@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { 
-  ZoomIn, ZoomOut, AlertTriangle, Volume2, Move,
-  ChevronRight, Sparkles, Layers, Sliders
+  ZoomIn, ZoomOut, AlertTriangle, Volume2, Sliders
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SubtitleSegment } from '../../types';
@@ -59,7 +58,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
   const frameDuration = 1 / fps; // 0.040s at 25 fps
   const totalWidth = Math.max(1200, duration * pixelsPerSecond);
 
-  // Dynamic Waveform Track Height based on user mode
+  // Waveform Height Mode
   const waveformHeight = useMemo(() => {
     switch (waveformHeightMode) {
       case 'compact': return 28;
@@ -114,6 +113,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
   }, [selectedSegmentId, pixelsPerSecond]);
 
   // Render Waveform Canvas - Unified coordinate scale (pixelsPerSecond)
+  // Palette: Fondo #201F1C, onda #77736C, onda seleccionada #759E96
   useEffect(() => {
     const canvas = waveformCanvasRef.current;
     if (!canvas) return;
@@ -124,14 +124,12 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     canvas.height = h;
     canvas.width = totalWidth;
 
-    ctx.clearRect(0, 0, totalWidth, h);
-
-    // Warm charcoal background
-    ctx.fillStyle = '#14171b';
+    // Solid dark warm background
+    ctx.fillStyle = '#201F1C';
     ctx.fillRect(0, 0, totalWidth, h);
 
-    // Center zero guide line in soft slate
-    ctx.strokeStyle = '#222730';
+    // Center zero guide line in soft earthy slate
+    ctx.strokeStyle = '#2C2925';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, h / 2);
@@ -161,28 +159,28 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
       if (isRealAudio) {
         // Real Audio extraction from Web Audio API
         const rawAmp = getWaveformAmplitude(waveformData, t);
-        amplitude = Math.max(2, rawAmp * (h * 0.85));
+        amplitude = Math.max(3, rawAmp * (h * 0.85));
       } else {
-        // Safe synthetic speech fallback
+        // Safe synthetic speech fallback (always textured, never blank!)
         const activeSeg = segments.find(s => t >= s.startSeconds && t <= s.endSeconds);
         if (activeSeg) {
           const freq1 = Math.sin(t * 14.5);
           const freq2 = Math.cos(t * 28.2);
           const envelope = Math.abs(freq1 * 0.65 + freq2 * 0.35);
-          amplitude = Math.max(4, envelope * (h * 0.75));
+          amplitude = Math.max(5, envelope * (h * 0.75));
         } else {
-          amplitude = 1.5 + (Math.sin(i * 0.8) * 1.0);
+          // Room floor noise
+          amplitude = 2.5 + (Math.sin(i * 0.7) * 1.5);
         }
       }
 
-      // Soft warm color grading (Teal on selection, Warm Gray elsewhere)
+      // Warm earthy color grading:
+      // In selection: #759E96 (soft muted teal wave)
+      // Normal wave: #77736C
       if (isInSelection) {
-        ctx.fillStyle = 'rgba(20, 184, 166, 0.85)'; // Soft teal
-      } else if (isRealAudio) {
-        ctx.fillStyle = amplitude > 4 ? '#5b6574' : '#323946'; // Warm slate gray
+        ctx.fillStyle = '#759E96';
       } else {
-        const activeSeg = segments.find(s => t >= s.startSeconds && t <= s.endSeconds);
-        ctx.fillStyle = activeSeg ? '#5b6574' : '#272d38';
+        ctx.fillStyle = amplitude > 4 ? '#77736C' : '#39352F';
       }
 
       const barY = (h - amplitude) / 2;
@@ -245,7 +243,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     return ticks;
   }, [duration, pixelsPerSecond]);
 
-  // Unified Pointer Handlers for Interactive Dragging (Left Handle, Right Handle, Body)
+  // Unified Pointer Handlers for Interactive Dragging
   const handleStartDrag = (
     e: React.PointerEvent,
     seg: SubtitleSegment,
@@ -274,7 +272,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
 
     if (!dragState) return;
 
-    // Use requestAnimationFrame for smooth 60fps drag rendering
     window.requestAnimationFrame(() => {
       const deltaX = e.clientX - dragState.startX;
       let deltaSec = deltaX / pixelsPerSecond;
@@ -313,7 +310,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     }
 
     if (dragState) {
-      // Commit final timecodes and trigger full QC evaluation
       updateSegmentTimecodes(
         dragState.segmentId,
         dragState.currentStart,
@@ -323,7 +319,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     }
   };
 
-  // Subtitle blocks with real-time draft position during dragging
+  // Subtitle blocks positioned in time
   const positionedSegments = useMemo(() => {
     return segments.map((seg, idx) => {
       const isBeingDragged = dragState?.segmentId === seg.id;
@@ -339,7 +335,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
       const liveCps = calculateCPS(seg.text, dur);
       const isHighCps = liveCps > qcProfile.maxCps;
 
-      // Immediate adjacent overlap checking during drag
       const prev = idx > 0 ? segments[idx - 1] : null;
       const prevEnd = prev ? (dragState?.segmentId === prev.id ? dragState.currentEnd : prev.endSeconds) : 0;
       const next = idx < segments.length - 1 ? segments[idx + 1] : null;
@@ -373,71 +368,66 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
 
   return (
     <div 
-      className="flex flex-col h-full bg-broadcast-panel border-t border-broadcast-border select-none overflow-hidden"
+      className="flex flex-col h-full bg-broadcast-panel border-t border-broadcast-border select-none overflow-hidden font-sans"
       onPointerMove={handleGlobalPointerMove}
       onPointerUp={handleGlobalPointerUp}
       onPointerCancel={handleGlobalPointerUp}
     >
-      {/* Top Controls Bar: Zoom, Snap, Waveform Height, Follow */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-broadcast-darkest border-b border-broadcast-border text-xs">
-        {/* Left: Section Title & SMPTE */}
+      {/* Top Controls Bar: Subdued & Clean */}
+      <div className="flex items-center justify-between px-3 py-1 bg-broadcast-darkest border-b border-broadcast-border text-xs">
+        {/* Left: Title & SMPTE */}
         <div className="flex items-center gap-3">
-          <span className="text-broadcast-accent font-semibold text-xs tracking-wide flex items-center gap-1.5">
-            <Sliders className="w-3.5 h-3.5" />
-            LÍNEA TEMPORAL
+          <span className="text-broadcast-textSecondary text-xs font-medium">
+            Línea temporal
           </span>
           <span className="text-broadcast-textMuted text-[11px] font-mono">
-            {pixelsPerSecond} px/s • SMPTE <strong className="text-white font-mono">{secondsToSMPTE(currentTime, fps)}</strong>
+            {pixelsPerSecond} px/s • SMPTE <span className="text-broadcast-textPrimary font-mono">{secondsToSMPTE(currentTime, fps)}</span>
           </span>
         </div>
 
-        {/* Right Controls: Waveform Height, Snap, Zoom, Follow */}
+        {/* Right Controls: Audio Height, Snap, Zoom, Follow */}
         <div className="flex items-center gap-2">
           {/* Waveform Height Selector */}
-          <div className="flex items-center rounded bg-broadcast-surface border border-broadcast-border p-0.5 text-[10px]">
-            <span className="text-broadcast-textMuted px-1.5 font-sans">Audio:</span>
+          <div className="flex items-center rounded bg-broadcast-surface px-1 py-0.5 text-[10px] text-broadcast-textMuted">
+            <span className="pr-1">Audio:</span>
             {(['compact', 'normal', 'expanded'] as const).map(mode => (
               <button
                 key={mode}
                 onClick={() => setWaveformHeightMode(mode)}
-                className={`px-1.5 py-0.5 rounded transition-colors uppercase ${
+                className={`px-1.5 py-0.2 rounded transition-colors ${
                   waveformHeightMode === mode
-                    ? 'bg-broadcast-accent text-white font-semibold'
-                    : 'text-broadcast-textMuted hover:text-white'
+                    ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium'
+                    : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
                 }`}
-                title={`Altura de pista de audio: ${mode}`}
               >
-                {mode === 'compact' ? '28px' : mode === 'normal' ? '48px' : '80px'}
+                {mode === 'compact' ? '28' : mode === 'normal' ? '48' : '80'}
               </button>
             ))}
           </div>
 
-          {/* Snap to Frames Toggle */}
+          {/* Snap Toggle */}
           <button
             onClick={() => setSnapToFrames(!snapToFrames)}
-            className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-colors flex items-center gap-1 ${
+            className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors border ${
               snapToFrames
-                ? 'bg-teal-950/60 text-teal-300 border-teal-600/40 font-semibold'
-                : 'bg-broadcast-surface text-broadcast-textMuted border-broadcast-border hover:text-white'
+                ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary border-broadcast-accent'
+                : 'bg-broadcast-surface text-broadcast-textMuted border-broadcast-border hover:text-broadcast-textSecondary'
             }`}
             title={`Ajuste magnético a fotogramas (${fps} fps, pasos de ${Math.round(frameDuration * 1000)}ms)`}
           >
-            <span>SNAP {fps}fps</span>
-            <span className="text-[9px] px-1 rounded bg-black/40">
-              {snapToFrames ? 'ON' : 'OFF'}
-            </span>
+            Snap {fps}f {snapToFrames ? 'ON' : 'OFF'}
           </button>
 
           {/* Zoom Presets */}
-          <div className="flex items-center rounded bg-broadcast-surface border border-broadcast-border p-0.5">
+          <div className="flex items-center rounded bg-broadcast-surface p-0.5 text-[10px] font-mono">
             {zoomPresets.map(preset => (
               <button
                 key={preset.label}
                 onClick={() => setPixelsPerSecond(preset.pps)}
-                className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                className={`px-1.5 py-0.2 rounded transition-colors ${
                   pixelsPerSecond === preset.pps
-                    ? 'bg-broadcast-accent text-white font-semibold'
-                    : 'text-broadcast-textMuted hover:text-white'
+                    ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-semibold'
+                    : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
                 }`}
               >
                 {preset.label}
@@ -446,7 +436,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           </div>
 
           {/* Zoom Slider */}
-          <div className="flex items-center gap-1 pl-1.5 border-l border-broadcast-border">
+          <div className="flex items-center gap-1 pl-1 border-l border-broadcast-border">
             <ZoomOut className="w-3.5 h-3.5 text-broadcast-textMuted" />
             <input
               type="range"
@@ -454,8 +444,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
               max={220}
               value={pixelsPerSecond}
               onChange={(e) => setPixelsPerSecond(Number(e.target.value))}
-              className="w-16 accent-teal-500 cursor-pointer h-1"
-              title="Ajuste fino de zoom horizontal"
+              className="w-14 accent-[#568F87] cursor-pointer h-1"
             />
             <ZoomIn className="w-3.5 h-3.5 text-broadcast-textMuted" />
           </div>
@@ -463,19 +452,18 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           {/* Auto Follow Toggle */}
           <button
             onClick={() => setAutoFollow(v => !v)}
-            className={`px-2 py-0.5 rounded text-[11px] border transition-colors ${
+            className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
               autoFollow
-                ? 'bg-broadcast-surface text-teal-300 border-teal-500/30'
-                : 'bg-broadcast-surface text-broadcast-textMuted border-broadcast-border hover:text-white'
+                ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary'
+                : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
             }`}
-            title="Auto-seguir el cabezal de reproducción en tiempo real"
           >
-            Auto-follow {autoFollow ? 'ON' : 'OFF'}
+            Follow {autoFollow ? 'ON' : 'OFF'}
           </button>
         </div>
       </div>
 
-      {/* Main Horizontal Scrollable Timeline Area (Unified Tracks) */}
+      {/* Main Horizontal Scrollable Timeline Area */}
       <div 
         ref={scrollContainerRef}
         className="flex-1 overflow-x-auto overflow-y-hidden relative scrollbar-thin bg-broadcast-darkest"
@@ -484,9 +472,9 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           style={{ width: `${totalWidth}px` }} 
           className="h-full relative flex flex-col"
         >
-          {/* TRACK 1: TIME RULER (Scale) */}
+          {/* TRACK 1: TIME RULER */}
           <div 
-            className="h-6 border-b border-broadcast-border bg-broadcast-panel/90 relative cursor-pointer"
+            className="h-5 border-b border-broadcast-border bg-broadcast-panel relative cursor-pointer"
             onPointerDown={handleTimelinePointerDown}
           >
             {rulerTicks.map((tick, i) => (
@@ -498,7 +486,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                 }`}
               >
                 {tick.label && (
-                  <span className="text-[10px] font-mono text-broadcast-textMuted pl-1 pt-0.5 block select-none">
+                  <span className="text-[9px] font-mono text-broadcast-textMuted pl-1 block select-none">
                     {tick.label}
                   </span>
                 )}
@@ -506,47 +494,39 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
             ))}
           </div>
 
-          {/* TRACK 2: WAVEFORM (Audio Track) */}
+          {/* TRACK 2: WAVEFORM (Audio Track) - Solid Dark Background: #201F1C */}
           <div 
-            style={{ height: `${waveformHeight}px` }}
-            className="border-b border-broadcast-border relative cursor-pointer overflow-hidden transition-all duration-150"
+            style={{ height: `${waveformHeight}px`, backgroundColor: '#201F1C' }}
+            className="border-b border-broadcast-border relative cursor-pointer overflow-hidden transition-all duration-150 bg-[#201F1C]"
             onPointerDown={handleTimelinePointerDown}
           >
             <canvas
               ref={waveformCanvasRef}
-              className="absolute inset-0 w-full h-full pointer-events-none"
+              className="absolute inset-0 pointer-events-none"
+              style={{ width: `${totalWidth}px`, height: `${waveformHeight}px` }}
             />
 
-            {/* Discrete Waveform Status Badge */}
-            <div className="absolute top-1 left-2 pointer-events-none z-10 flex items-center gap-1.5">
-              <span className="text-[9px] font-sans px-1.5 py-0.5 rounded bg-broadcast-darkest/80 text-broadcast-textMuted border border-broadcast-border flex items-center gap-1">
-                <Volume2 className="w-2.5 h-2.5 text-teal-400" />
+            {/* Discrete Waveform Status */}
+            <div className="absolute top-1 left-2 pointer-events-none z-10">
+              <span className="text-[9px] font-sans px-1.5 py-0.2 rounded bg-[#1A1917]/80 text-broadcast-textMuted flex items-center gap-1">
+                <Volume2 className="w-2.5 h-2.5 text-[#568F87]" />
                 {isExtractingWaveform ? (
-                  <span className="text-teal-400 animate-pulse">Decodificando audio real...</span>
+                  <span>Decodificando audio...</span>
                 ) : waveformData?.isReal ? (
-                  <span>Audio nativo ({waveformData.fileName})</span>
+                  <span>Audio físico ({waveformData.fileName})</span>
                 ) : waveformExtractionFailed ? (
-                  <span className="text-amber-400">Fallback de voz (formato no soportado)</span>
+                  <span>Audio sintético (formato no soportado)</span>
                 ) : (
-                  <span>Forma de onda referencial</span>
+                  <span>Forma de onda de referencia</span>
                 )}
               </span>
             </div>
           </div>
 
           {/* TRACK 3: SUBTITLES TRACK */}
-          <div className="flex-1 relative bg-broadcast-panel/30 p-2 overflow-hidden">
-            {/* Track background guide label */}
-            <div className="absolute top-1 left-2 pointer-events-none z-10">
-              <span className="text-[9px] font-sans px-1.5 py-0.5 rounded bg-broadcast-darkest/80 text-broadcast-textMuted border border-broadcast-border">
-                Pista de Subtítulos ({segments.length} bloques)
-              </span>
-            </div>
-
+          <div className="flex-1 relative bg-broadcast-panel/50 p-2 overflow-hidden">
             {/* Subtitle Blocks */}
             {positionedSegments.map(seg => {
-              const speakerColor = seg.speaker?.color || '#38bdf8';
-
               return (
                 <div
                   key={seg.id}
@@ -558,80 +538,74 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                   style={{
                     left: `${seg.x}px`,
                     width: `${seg.width}px`,
-                    top: seg.isOverlap ? '28px' : '10px',
+                    top: seg.isOverlap ? '26px' : '8px',
                     height: '42px'
                   }}
-                  className={`absolute rounded px-2 py-1 flex flex-col justify-between select-none cursor-pointer transition-shadow overflow-hidden group ${
+                  className={`absolute rounded px-2 py-1 flex flex-col justify-between select-none cursor-pointer transition-colors overflow-hidden ${
                     seg.isSelected
-                      ? 'border-2 border-teal-500 bg-broadcast-surface shadow-md z-20'
+                      ? 'bg-broadcast-surfaceHover border border-broadcast-accent text-broadcast-textPrimary shadow-sm z-20'
                       : seg.isCurrent
-                      ? 'border border-teal-600/70 bg-teal-950/30 z-10'
+                      ? 'bg-broadcast-surface border border-broadcast-accent/50 text-broadcast-textPrimary z-10'
                       : seg.isOverlap
-                      ? 'border border-terracotta bg-red-950/30'
-                      : 'border border-broadcast-border hover:border-broadcast-borderLight bg-broadcast-darkest/90 hover:bg-broadcast-surface'
+                      ? 'bg-broadcast-panel border border-broadcast-danger text-broadcast-textSecondary'
+                      : 'bg-broadcast-panel border border-broadcast-border hover:bg-broadcast-surface hover:border-broadcast-borderLight text-broadcast-textSecondary'
                   }`}
-                  title={`#${seg.number} ${seg.speaker?.displayName || 'Speaker'}: ${seg.text} (${secondsToDisplayTime(seg.startSeconds)} - ${secondsToDisplayTime(seg.endSeconds)})`}
+                  title={`#${seg.number}: ${seg.text} (${secondsToDisplayTime(seg.startSeconds)} - ${secondsToDisplayTime(seg.endSeconds)})`}
                 >
-                  {/* Top Bar inside block: Speaker name + CPS + Warnings */}
-                  <div className="flex items-center justify-between gap-1 overflow-hidden leading-tight">
+                  {/* Top Bar inside block: Speaker + Live CPS if selected */}
+                  <div className="flex items-center justify-between gap-1 overflow-hidden leading-tight text-[10px]">
                     <span 
-                      className="text-[10px] font-semibold truncate"
-                      style={{ color: speakerColor }}
+                      className="font-medium truncate"
+                      style={{ color: seg.speaker?.color || '#AAA49A' }}
                     >
-                      {seg.speaker?.displayName || 'Speaker'}
+                      {seg.speaker?.displayName || 'Hablante'}
                     </span>
 
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      {/* Live CPS Badge if selected or high */}
                       {seg.isSelected && (
-                        <span className={`text-[9px] font-mono px-1 rounded ${
-                          seg.isHighCps ? 'bg-amber-950 text-amber-300 font-bold' : 'text-broadcast-textMuted'
+                        <span className={`text-[9px] font-mono ${
+                          seg.isHighCps ? 'text-broadcast-amber font-semibold' : 'text-broadcast-textMuted'
                         }`}>
                           {seg.liveCps.toFixed(1)} CPS
                         </span>
                       )}
 
-                      {/* Warning indicator */}
                       {seg.hasWarning && (
-                        <span className="text-amber-500" title={seg.warnings?.map(w => w.message).join(' • ')}>
-                          <AlertTriangle className="w-3 h-3" />
+                        <span className="text-broadcast-amber" title={seg.warnings?.map(w => w.message).join(' • ')}>
+                          <AlertTriangle className="w-2.5 h-2.5" />
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Text snippet inside block */}
-                  <div className="text-[11px] text-broadcast-textPrimary font-sans truncate leading-tight mt-0.5">
+                  <div className="text-[11px] text-broadcast-textPrimary truncate leading-tight mt-0.5 font-sans">
                     {seg.text}
                   </div>
 
-                  {/* Interactive Drag Handles (Rendered only on Selected Segment) */}
+                  {/* Drag Handles on Selected Segment (Quiet, non-fluorescent) */}
                   {seg.isSelected && (
                     <>
                       {/* LEFT TRIM HANDLE (IN) */}
                       <div
                         onPointerDown={(e) => handleStartDrag(e, seg, 'in')}
-                        className="absolute left-0 top-0 bottom-0 w-2.5 cursor-col-resize hover:bg-teal-400 bg-teal-500/80 z-30 transition-colors flex items-center justify-center group/left"
-                        title="Arrastrar para ajustar punto de ENTRADA (IN)"
-                      >
-                        <div className="w-0.5 h-3 bg-white/70 rounded-full" />
-                      </div>
+                        className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#568F87]/80 hover:bg-[#568F87] z-30 transition-colors"
+                        title="Ajustar punto IN"
+                      />
 
-                      {/* BODY SLIP HANDLE (MOVE) */}
+                      {/* BODY MOVE HANDLE */}
                       <div
                         onPointerDown={(e) => handleStartDrag(e, seg, 'body')}
-                        className="absolute left-2.5 right-2.5 top-0 bottom-0 cursor-grab active:cursor-grabbing z-20"
-                        title="Arrastrar para desplazar subtítulo conservando duración"
+                        className="absolute left-2 right-2 top-0 bottom-0 cursor-grab active:cursor-grabbing z-20"
+                        title="Desplazar bloque"
                       />
 
                       {/* RIGHT TRIM HANDLE (OUT) */}
                       <div
                         onPointerDown={(e) => handleStartDrag(e, seg, 'out')}
-                        className="absolute right-0 top-0 bottom-0 w-2.5 cursor-col-resize hover:bg-teal-400 bg-teal-500/80 z-30 transition-colors flex items-center justify-center group/right"
-                        title="Arrastrar para ajustar punto de SALIDA (OUT)"
-                      >
-                        <div className="w-0.5 h-3 bg-white/70 rounded-full" />
-                      </div>
+                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#568F87]/80 hover:bg-[#568F87] z-30 transition-colors"
+                        title="Ajustar punto OUT"
+                      />
                     </>
                   )}
                 </div>
@@ -639,15 +613,13 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
             })}
           </div>
 
-          {/* UNIFIED VERTICAL PLAYHEAD (Spans across ruler, waveform and subtitles) */}
+          {/* UNIFIED VERTICAL PLAYHEAD (Discreet teal, no electric glow) */}
           <div
             style={{ left: `${playheadPositionX}px` }}
-            className="absolute top-0 bottom-0 w-px bg-teal-400 z-30 pointer-events-none shadow-[0_0_4px_rgba(20,184,166,0.6)]"
+            className="absolute top-0 bottom-0 w-px bg-[#568F87] z-30 pointer-events-none"
           >
-            {/* Playhead Top Scrubber Head */}
-            <div className="relative -left-2 top-0 w-4 h-3.5 bg-teal-500 text-black flex items-center justify-center rounded-b-sm shadow">
-              <div className="w-0.5 h-2 bg-black/60 rounded-full" />
-            </div>
+            {/* Scrubber top head */}
+            <div className="relative -left-1.5 top-0 w-3 h-2.5 bg-[#568F87] rounded-b-sm" />
           </div>
         </div>
       </div>

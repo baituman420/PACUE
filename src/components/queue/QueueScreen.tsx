@@ -41,14 +41,14 @@ export const QueueScreen: React.FC = () => {
 
       {/* Active Work In Progress alert if any */}
       {inProgressJobs.length > 0 && (
-        <div className="mb-6 p-4 rounded-lg bg-cyan-950/20 border border-cyan-500/40 flex items-center justify-between">
+        <div className="mb-6 p-3.5 rounded bg-broadcast-surface border border-broadcast-border flex items-center justify-between font-sans">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-broadcast-accent animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-broadcast-accent" />
             <div>
-              <div className="text-xs text-broadcast-accent font-bold uppercase tracking-wider">
-                Trabajo en producción actualmente
+              <div className="text-[11px] text-broadcast-textMuted uppercase tracking-wider font-medium">
+                Trabajo en producción
               </div>
-              <div className="text-sm font-semibold text-white">
+              <div className="text-sm font-semibold text-broadcast-textPrimary">
                 {inProgressJobs[0].clientName} — {inProgressJobs[0].title}
               </div>
             </div>
@@ -120,7 +120,7 @@ export const QueueScreen: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between text-broadcast-textMuted">
                       <span>Servicio:</span>
-                      <span className="text-cyan-300">{job.serviceType}</span>
+                      <span className="text-broadcast-textSecondary">{job.serviceType}</span>
                     </div>
                     <div className="flex items-center justify-between text-broadcast-textMuted">
                       <span>Entrega límite:</span>

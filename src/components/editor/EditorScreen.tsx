@@ -29,70 +29,67 @@ export const EditorScreen: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-broadcast-darkest overflow-hidden">
       {/* Top Secondary View Switcher Bar */}
-      <div className="h-9 bg-broadcast-darkest border-b border-broadcast-border px-4 flex items-center justify-between text-xs select-none">
+      <div className="h-8 bg-broadcast-darkest border-b border-broadcast-border px-3 flex items-center justify-between text-xs select-none">
         {/* Left: View mode toggles */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-broadcast-textMuted mr-1 font-sans">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-broadcast-textMuted font-sans uppercase tracking-wider mr-1">
             Modo:
           </span>
-          <div className="flex items-center rounded bg-broadcast-surface border border-broadcast-border p-0.5">
+          <div className="flex items-center rounded bg-broadcast-surface p-0.5">
             <button
               onClick={() => setEditorMode('timeline')}
-              className={`px-3 py-1 rounded text-xs font-sans font-medium flex items-center gap-1.5 transition-colors ${
+              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'timeline'
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'text-broadcast-textMuted hover:text-white'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Enfoque Timeline-First: Vídeo superior + Línea temporal con waveform y bloques espaciales"
             >
-              <Film className="w-3.5 h-3.5" />
-              <span>Timeline</span>
+              Timeline
             </button>
 
             <button
               onClick={() => setEditorMode('texto')}
-              className={`px-3 py-1 rounded text-xs font-sans font-medium flex items-center gap-1.5 transition-colors ${
+              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'texto'
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'text-broadcast-textMuted hover:text-white'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Enfoque Texto: Revisión vertical masiva, filtros de QC y búsqueda"
             >
-              <AlignLeft className="w-3.5 h-3.5" />
-              <span>Texto</span>
+              Texto
             </button>
 
             <button
               onClick={() => setEditorMode('split')}
-              className={`px-3 py-1 rounded text-xs font-sans font-medium flex items-center gap-1.5 transition-colors ${
+              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'split'
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'text-broadcast-textMuted hover:text-white'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Vista Híbrida: Vídeo + Lista de texto + Timeline inferior"
             >
-              <SplitSquareVertical className="w-3.5 h-3.5" />
-              <span>Split</span>
+              Split
             </button>
           </div>
         </div>
 
         {/* Right: Quick Context Status & Speakers Modal Button */}
-        <div className="flex items-center gap-2.5 font-sans">
+        <div className="flex items-center gap-2 font-sans">
           {/* Active selection summary */}
           {selectedSegment ? (
-            <div className="text-[11px] text-broadcast-textMuted hidden sm:flex items-center gap-2">
-              <span>Seleccionado: <strong className="text-white font-mono">#{selectedSegment.number}</strong></span>
+            <div className="text-[11px] text-broadcast-textMuted hidden sm:flex items-center gap-1.5">
+              <span>Selección: <strong className="text-broadcast-textPrimary font-mono">#{selectedSegment.number}</strong></span>
               <span
-                className="font-medium px-1.5 py-0.5 rounded text-[10px]"
+                className="font-medium px-1 rounded text-[10px]"
                 style={{
-                  color: speakers[selectedSegment.speakerId]?.color || '#14b8a6',
-                  backgroundColor: `${speakers[selectedSegment.speakerId]?.color || '#14b8a6'}15`
+                  color: speakers[selectedSegment.speakerId]?.color || '#AAA49A',
+                  backgroundColor: `${speakers[selectedSegment.speakerId]?.color || '#AAA49A'}15`
                 }}
               >
                 {speakers[selectedSegment.speakerId]?.displayName}
               </span>
-              <span className="font-mono text-[10px]">[{selectedSegment.startTime} - {selectedSegment.endTime}]</span>
+              <span className="font-mono text-[10px] text-broadcast-textMuted">[{selectedSegment.startTime} - {selectedSegment.endTime}]</span>
             </div>
           ) : (
             <span className="text-[11px] text-broadcast-textMuted hidden sm:inline">
@@ -103,19 +100,19 @@ export const EditorScreen: React.FC = () => {
           {/* Speakers button */}
           <button
             onClick={() => setIsSpeakerDrawerOpen(true)}
-            className="px-2.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover border border-broadcast-border text-xs font-medium text-broadcast-textPrimary hover:text-white flex items-center gap-1.5 transition-colors"
+            className="px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
           >
-            <Users className="w-3.5 h-3.5 text-broadcast-textMuted" />
+            <Users className="w-3 h-3 text-broadcast-textMuted" />
             <span>Personajes</span>
           </button>
 
           {/* Work Rules button */}
           <button
             onClick={() => setIsRulesDrawerOpen(true)}
-            className="px-2.5 py-1 rounded bg-broadcast-surface hover:bg-teal-950/40 border border-teal-600/30 text-xs font-medium text-teal-300 hover:text-teal-200 flex items-center gap-1.5 transition-colors"
-            title="Consultar manual de estilo y reglas de subtitulado (UNE 153010, Cliente, Proyecto)"
+            className="px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
+            title="Consultar manual de estilo y reglas de subtitulado"
           >
-            <BookOpen className="w-3.5 h-3.5 text-teal-400" />
+            <BookOpen className="w-3 h-3 text-broadcast-textMuted" />
             <span>Reglas</span>
           </button>
         </div>

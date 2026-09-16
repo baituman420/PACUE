@@ -10,8 +10,8 @@ export const Header: React.FC = () => {
       {/* Brand & Context */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          {/* Logo mark - Calm teal without electric glow */}
-          <div className="w-5 h-5 rounded bg-teal-600/90 text-white font-sans font-bold text-xs flex items-center justify-center">
+          {/* Logo mark - Quiet earthy badge */}
+          <div className="w-5 h-5 rounded bg-broadcast-surfaceHover border border-broadcast-border text-broadcast-textPrimary font-sans font-bold text-xs flex items-center justify-center">
             P
           </div>
           <span className="font-sans font-bold tracking-wider text-sm text-broadcast-textPrimary">
@@ -21,12 +21,12 @@ export const Header: React.FC = () => {
 
         <span className="text-broadcast-border text-xs">|</span>
 
-        <span className="text-xs text-broadcast-textMuted hidden sm:inline">
+        <span className="text-xs text-broadcast-textMuted hidden sm:inline font-sans">
           Workspace de Subtitulado
         </span>
 
         {/* Discrete Mundo Escena tag */}
-        <span className="text-[10px] px-2 py-0.5 rounded bg-broadcast-surface border border-broadcast-border text-broadcast-textMuted hidden md:inline">
+        <span className="text-[10px] px-2 py-0.5 rounded bg-broadcast-surface border border-broadcast-border text-broadcast-textMuted hidden md:inline font-sans">
           Mundo Escena
         </span>
       </div>
@@ -35,16 +35,16 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3">
         {/* Production Status */}
         {activeJob && (
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-broadcast-surface border border-broadcast-border text-xs hidden lg:flex">
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            <span className="text-broadcast-textPrimary font-medium">{activeJob.clientName}</span>
-            <span className="text-broadcast-textMuted font-mono text-[11px]">[{activeJob.duration}]</span>
+          <div className="flex items-center gap-2 px-2 py-0.5 rounded bg-broadcast-surface border border-broadcast-border text-xs hidden lg:flex font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-broadcast-accent" />
+            <span className="text-broadcast-textSecondary font-medium">{activeJob.clientName}</span>
+            <span className="text-broadcast-textMuted font-mono text-[10px]">[{activeJob.duration}]</span>
           </div>
         )}
 
         {/* User profile */}
-        <div className="flex items-center gap-2 text-xs">
-          <div className="w-6 h-6 rounded-full bg-broadcast-surface border border-broadcast-border flex items-center justify-center font-sans font-semibold text-teal-400 text-[11px]">
+        <div className="flex items-center gap-2 text-xs font-sans">
+          <div className="w-6 h-6 rounded-full bg-broadcast-surface border border-broadcast-border flex items-center justify-center font-sans font-medium text-broadcast-textSecondary text-[11px]">
             {user.initials}
           </div>
           <div className="hidden sm:block text-left leading-tight">
