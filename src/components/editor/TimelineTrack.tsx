@@ -418,21 +418,21 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
       onPointerCancel={handleGlobalPointerUp}
     >
       {/* Top Controls Bar: Subdued & Clean */}
-      <div className="flex items-center justify-between px-3 py-1 bg-broadcast-darkest border-b border-broadcast-border text-xs">
+      <div className="flex items-center justify-between px-2 sm:px-3 py-1 bg-broadcast-darkest border-b border-broadcast-border text-xs overflow-x-auto">
         {/* Left: Title & SMPTE */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <span className="text-broadcast-textSecondary text-xs font-medium">
             Línea temporal
           </span>
-          <span className="text-broadcast-textMuted text-[11px] font-mono">
-            {pixelsPerSecond} px/s • SMPTE <span className="text-broadcast-textPrimary font-mono">{secondsToSMPTE(currentTime, fps)}</span>
+          <span className="text-broadcast-textMuted text-[10px] sm:text-[11px] font-mono hidden xs:inline">
+            {pixelsPerSecond} px/s
           </span>
         </div>
 
         {/* Right Controls: Audio Height, Snap, Zoom, Follow */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           {/* Waveform Height Selector */}
-          <div className="flex items-center rounded bg-broadcast-surface px-1 py-0.5 text-[10px] text-broadcast-textMuted">
+          <div className="hidden sm:flex items-center rounded bg-broadcast-surface px-1 py-0.5 text-[10px] text-broadcast-textMuted">
             <span className="pr-1">Audio:</span>
             {(['compact', 'normal', 'expanded'] as const).map(mode => (
               <button
@@ -452,14 +452,14 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           {/* Snap Toggle */}
           <button
             onClick={() => setSnapToFrames(!snapToFrames)}
-            className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors border ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-mono transition-colors border ${
               snapToFrames
                 ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary border-[#B79D72]'
                 : 'bg-broadcast-surface text-broadcast-textMuted border-broadcast-border hover:text-broadcast-textSecondary'
             }`}
             title={`Ajuste magnético a fotogramas (${fps} fps, pasos de ${Math.round(frameDuration * 1000)}ms)`}
           >
-            Snap {fps}f {snapToFrames ? 'ON' : 'OFF'}
+            Snap {snapToFrames ? 'ON' : 'OFF'}
           </button>
 
           {/* Zoom Presets */}
@@ -468,7 +468,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
               <button
                 key={preset.label}
                 onClick={() => setPixelsPerSecond(preset.pps)}
-                className={`px-1.5 py-0.2 rounded transition-colors ${
+                className={`px-1 sm:px-1.5 py-0.2 rounded transition-colors ${
                   pixelsPerSecond === preset.pps
                     ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-semibold'
                     : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
@@ -480,7 +480,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           </div>
 
           {/* Zoom Slider */}
-          <div className="flex items-center gap-1 pl-1 border-l border-broadcast-border">
+          <div className="hidden md:flex items-center gap-1 pl-1 border-l border-broadcast-border">
             <ZoomOut className="w-3.5 h-3.5 text-broadcast-textMuted" />
             <input
               type="range"
@@ -496,7 +496,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
           {/* Auto Follow Toggle */}
           <button
             onClick={() => setAutoFollow(v => !v)}
-            className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+            className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] transition-colors ${
               autoFollow
                 ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary'
                 : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'

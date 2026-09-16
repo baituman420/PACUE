@@ -6,13 +6,13 @@ export const SettingsScreen: React.FC = () => {
   const { qcProfile, setQCProfile } = useApp();
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 max-w-5xl mx-auto w-full space-y-6">
+    <div className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-5xl mx-auto w-full space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-broadcast-border">
         <div>
           <div className="flex items-center gap-2">
-            <Settings className="w-6 h-6 text-broadcast-accent" />
-            <h1 className="text-xl font-bold uppercase tracking-wider text-white">
+            <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-broadcast-accent" />
+            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-white">
               Configuración y Arquitectura de Integraciones
             </h1>
           </div>

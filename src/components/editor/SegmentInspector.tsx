@@ -149,9 +149,9 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
       </div>
 
       {/* 3. COMPACT METRICS ROW: IN | OUT | DURACIÓN | CPS (IN A SINGLE STRIP) */}
-      <div className="bg-broadcast-darkest px-3 py-2 rounded flex items-center justify-between text-xs border border-broadcast-border/60">
+      <div className="bg-broadcast-darkest px-2 sm:px-3 py-2 rounded flex items-center justify-between text-xs border border-broadcast-border/60 overflow-x-auto">
         {/* IN */}
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-shrink-0">
           <span className="text-[10px] text-broadcast-textMuted">IN</span>
           <input
             type="text"
@@ -159,14 +159,14 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
             onChange={(e) => setInInput(e.target.value)}
             onBlur={handleInSubmit}
             onKeyDown={(e) => e.key === 'Enter' && handleInSubmit()}
-            className="w-20 bg-transparent font-mono text-xs font-semibold text-broadcast-textPrimary focus:outline-none focus:text-white"
+            className="w-16 sm:w-20 bg-transparent font-mono text-xs font-semibold text-broadcast-textPrimary focus:outline-none focus:text-white"
           />
         </div>
 
-        <span className="text-broadcast-border">|</span>
+        <span className="text-broadcast-border px-1">|</span>
 
         {/* OUT */}
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-shrink-0">
           <span className="text-[10px] text-broadcast-textMuted">OUT</span>
           <input
             type="text"
@@ -174,24 +174,24 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
             onChange={(e) => setOutInput(e.target.value)}
             onBlur={handleOutSubmit}
             onKeyDown={(e) => e.key === 'Enter' && handleOutSubmit()}
-            className="w-20 bg-transparent font-mono text-xs font-semibold text-broadcast-textPrimary focus:outline-none focus:text-white"
+            className="w-16 sm:w-20 bg-transparent font-mono text-xs font-semibold text-broadcast-textPrimary focus:outline-none focus:text-white"
           />
         </div>
 
-        <span className="text-broadcast-border">|</span>
+        <span className="text-broadcast-border px-1">|</span>
 
         {/* DURACIÓN */}
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-shrink-0">
           <span className="text-[10px] text-broadcast-textMuted">DURACIÓN</span>
           <span className="font-mono text-xs font-semibold text-broadcast-textPrimary">
             {duration.toFixed(2)}s <span className="text-[10px] text-broadcast-textMuted">({totalFrames}f)</span>
           </span>
         </div>
 
-        <span className="text-broadcast-border">|</span>
+        <span className="text-broadcast-border px-1">|</span>
 
         {/* CPS */}
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-shrink-0">
           <span className="text-[10px] text-broadcast-textMuted">CPS</span>
           <span className={`font-mono text-xs font-semibold ${
             isHighCps ? 'text-broadcast-amber font-bold' : 'text-broadcast-textSecondary'
@@ -202,7 +202,7 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
       </div>
 
       {/* 4. SECONDARY TRIM & SLIP ACTIONS (QUIET & MINIMAL) */}
-      <div className="flex items-center justify-between text-[11px] pt-1">
+      <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] pt-1">
         <div className="flex items-center gap-1 text-broadcast-textMuted">
           <button
             onClick={() => setSegmentInPoint(selectedSegment.id)}

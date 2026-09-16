@@ -75,8 +75,8 @@ export const ActiveJobScreen: React.FC = () => {
         </div>
 
         {/* Right: Subdued Pipeline Stepper & Primary Action */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="flex items-center gap-0.5 bg-broadcast-darkest/70 p-0.5 rounded border border-broadcast-border">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-0.5 bg-broadcast-darkest/70 p-0.5 rounded border border-broadcast-border max-w-[140px] sm:max-w-none overflow-x-auto">
             {stages.map((stage, idx) => {
               const isCurrent = stage.id === activeStage;
 
@@ -84,7 +84,7 @@ export const ActiveJobScreen: React.FC = () => {
                 <button
                   key={stage.id}
                   onClick={() => setActiveStage(stage.id)}
-                  className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+                  className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-[11px] whitespace-nowrap transition-colors flex-shrink-0 ${
                     isCurrent
                       ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium shadow-sm'
                       : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'

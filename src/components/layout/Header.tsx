@@ -1,14 +1,24 @@
 import React from 'react';
-import { RotateCcw, Radio } from 'lucide-react';
+import { RotateCcw, Radio, Menu } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const Header: React.FC = () => {
-  const { user, activeJob, resetAllDemoData } = useApp();
+  const { user, activeJob, resetAllDemoData, isMobileMenuOpen, setIsMobileMenuOpen } = useApp();
 
   return (
-    <header className="h-11 bg-broadcast-darkest border-b border-broadcast-border px-4 flex items-center justify-between select-none z-30">
+    <header className="h-11 bg-broadcast-darkest border-b border-broadcast-border px-3 sm:px-4 flex items-center justify-between select-none z-30">
       {/* Brand & Context */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Mobile menu trigger */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-1.5 -ml-1 rounded hover:bg-broadcast-surface text-[#BEB6AA] hover:text-[#D8D1C5] md:hidden transition-colors flex items-center justify-center"
+          title="Menú de navegación"
+          aria-label="Abrir menú"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
+
         <div className="flex items-center gap-2">
           {/* Logo mark - Quiet earthy badge */}
           <div className="w-5 h-5 rounded bg-broadcast-surfaceHover border border-broadcast-border text-broadcast-textPrimary font-sans font-bold text-xs flex items-center justify-center">

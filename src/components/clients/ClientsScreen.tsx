@@ -6,13 +6,13 @@ export const ClientsScreen: React.FC = () => {
   const { clients } = useApp();
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+    <div className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-broadcast-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-broadcast-border">
         <div>
           <div className="flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-broadcast-accent" />
-            <h1 className="text-xl font-bold uppercase tracking-wider text-white">
+            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-broadcast-accent" />
+            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-white">
               Perfiles de Clientes y Entrega
             </h1>
           </div>

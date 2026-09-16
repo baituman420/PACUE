@@ -15,6 +15,8 @@ interface AppContextType {
   // Navigation & Jobs
   currentView: 'cola' | 'trabajo' | 'historial' | 'clientes' | 'configuracion';
   setCurrentView: (view: 'cola' | 'trabajo' | 'historial' | 'clientes' | 'configuracion') => void;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
   jobs: Job[];
   activeJobId: string | null;
   setActiveJobId: (id: string | null) => void;
@@ -101,6 +103,7 @@ const AppContext = createContext<AppContextType | null>(null);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Navigation
   const [currentView, setCurrentView] = useState<'cola' | 'trabajo' | 'historial' | 'clientes' | 'configuracion'>('cola');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Jobs
   const [jobs, setJobs] = useState<Job[]>(() => {
@@ -572,6 +575,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         currentView,
         setCurrentView,
+        isMobileMenuOpen,
+        setIsMobileMenuOpen,
         jobs,
         activeJobId,
         setActiveJobId,

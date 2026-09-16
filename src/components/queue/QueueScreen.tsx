@@ -12,13 +12,13 @@ export const QueueScreen: React.FC = () => {
   const inProgressJobs = jobs.filter(j => j.status === 'En producción');
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+    <div className="flex-1 overflow-y-auto p-3 sm:p-6 max-w-6xl mx-auto w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-broadcast-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-broadcast-border">
         <div>
           <div className="flex items-center gap-2">
-            <Inbox className="w-6 h-6 text-broadcast-accent" />
-            <h1 className="text-xl font-bold uppercase tracking-wider text-white">
+            <Inbox className="w-5 h-5 sm:w-6 sm:h-6 text-broadcast-accent" />
+            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-white">
               Cola de Trabajos Audiovisuales
             </h1>
           </div>
@@ -27,12 +27,12 @@ export const QueueScreen: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 text-xs">
-          <span className="px-3 py-1.5 rounded bg-broadcast-surface border border-broadcast-border font-mono text-broadcast-textPrimary">
+        <div className="flex items-center gap-2 sm:gap-3 text-xs">
+          <span className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded bg-broadcast-surface border border-broadcast-border font-mono text-broadcast-textPrimary text-[11px] sm:text-xs">
             Disponibles: <strong className="text-broadcast-accent">{availableJobs.length}</strong>
           </span>
           {inProgressJobs.length > 0 && (
-            <span className="px-3 py-1.5 rounded bg-amber-950/40 border border-amber-800/50 font-mono text-amber-400">
+            <span className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded bg-amber-950/40 border border-amber-800/50 font-mono text-amber-400 text-[11px] sm:text-xs">
               En curso: <strong>{inProgressJobs.length}</strong>
             </span>
           )}
@@ -41,7 +41,7 @@ export const QueueScreen: React.FC = () => {
 
       {/* Active Work In Progress alert if any */}
       {inProgressJobs.length > 0 && (
-        <div className="mb-6 p-3.5 rounded bg-broadcast-surface border border-broadcast-border flex items-center justify-between font-sans">
+        <div className="mb-6 p-3.5 rounded bg-broadcast-surface border border-broadcast-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-sans">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-broadcast-accent" />
             <div>

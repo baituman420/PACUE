@@ -22,23 +22,23 @@ export const EditorScreen: React.FC = () => {
     activeRuleIdToHighlight
   } = useApp();
 
-  // Mode: 'timeline' (Timeline-first, default) | 'texto' (Vertical list) | 'split' (Combined)
-  const [editorMode, setEditorMode] = useState<'timeline' | 'texto' | 'split'>('timeline');
+  // Mode: 'timeline' (Timeline-first, default) | 'inspector' (Mobile Inspector focus) | 'texto' (Vertical list) | 'split' (Combined)
+  const [editorMode, setEditorMode] = useState<'timeline' | 'inspector' | 'texto' | 'split'>('timeline');
   const [isSpeakerDrawerOpen, setIsSpeakerDrawerOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-full bg-broadcast-darkest overflow-hidden">
       {/* Top Secondary View Switcher Bar */}
-      <div className="h-8 bg-broadcast-darkest border-b border-broadcast-border px-3 flex items-center justify-between text-xs select-none">
+      <div className="h-8 bg-broadcast-darkest border-b border-broadcast-border px-2 sm:px-3 flex items-center justify-between text-xs select-none">
         {/* Left: View mode toggles */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-broadcast-textMuted font-sans uppercase tracking-wider mr-1">
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto">
+          <span className="text-[10px] text-broadcast-textMuted font-sans uppercase tracking-wider mr-0.5 sm:mr-1 hidden xs:inline">
             Modo:
           </span>
           <div className="flex items-center rounded bg-broadcast-surface p-0.5">
             <button
               onClick={() => setEditorMode('timeline')}
-              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
+              className={`px-2 sm:px-2.5 py-0.5 rounded text-[11px] sm:text-xs font-sans transition-colors ${
                 editorMode === 'timeline'
                   ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
@@ -48,9 +48,22 @@ export const EditorScreen: React.FC = () => {
               Timeline
             </button>
 
+            {/* Inspector tab on mobile screens */}
+            <button
+              onClick={() => setEditorMode('inspector')}
+              className={`px-2 sm:px-2.5 py-0.5 rounded text-[11px] sm:text-xs font-sans transition-colors md:hidden ${
+                editorMode === 'inspector'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
+                  : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
+              }`}
+              title="Inspector de bloque seleccionado"
+            >
+              Inspector
+            </button>
+
             <button
               onClick={() => setEditorMode('texto')}
-              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
+              className={`px-2 sm:px-2.5 py-0.5 rounded text-[11px] sm:text-xs font-sans transition-colors ${
                 editorMode === 'texto'
                   ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
@@ -62,7 +75,7 @@ export const EditorScreen: React.FC = () => {
 
             <button
               onClick={() => setEditorMode('split')}
-              className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
+              className={`px-2 sm:px-2.5 py-0.5 rounded text-[11px] sm:text-xs font-sans transition-colors hidden md:inline-block ${
                 editorMode === 'split'
                   ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
@@ -75,10 +88,10 @@ export const EditorScreen: React.FC = () => {
         </div>
 
         {/* Right: Quick Context Status & Speakers Modal Button */}
-        <div className="flex items-center gap-2 font-sans">
-          {/* Active selection summary */}
+        <div className="flex items-center gap-1.5 sm:gap-2 font-sans flex-shrink-0">
+          {/* Active selection summary on tablet/desktop */}
           {selectedSegment ? (
-            <div className="text-[11px] text-broadcast-textMuted hidden sm:flex items-center gap-1.5">
+            <div className="text-[11px] text-broadcast-textMuted hidden lg:flex items-center gap-1.5">
               <span>Selección: <strong className="text-broadcast-textPrimary font-mono">#{selectedSegment.number}</strong></span>
               <span
                 className="font-medium px-1 rounded text-[10px]"
@@ -92,7 +105,7 @@ export const EditorScreen: React.FC = () => {
               <span className="font-mono text-[10px] text-broadcast-textMuted">[{selectedSegment.startTime} - {selectedSegment.endTime}]</span>
             </div>
           ) : (
-            <span className="text-[11px] text-broadcast-textMuted hidden sm:inline">
+            <span className="text-[11px] text-broadcast-textMuted hidden lg:inline">
               Sin selección
             </span>
           )}
@@ -100,59 +113,71 @@ export const EditorScreen: React.FC = () => {
           {/* Speakers button */}
           <button
             onClick={() => setIsSpeakerDrawerOpen(true)}
-            className="px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
+            className="px-1.5 sm:px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
           >
             <Users className="w-3 h-3 text-broadcast-textMuted" />
-            <span>Personajes</span>
+            <span className="hidden sm:inline">Personajes</span>
           </button>
 
           {/* Work Rules button */}
           <button
             onClick={() => setIsRulesDrawerOpen(true)}
-            className="px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
+            className="px-1.5 sm:px-2 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-xs font-medium text-broadcast-textSecondary hover:text-broadcast-textPrimary flex items-center gap-1 transition-colors border border-broadcast-border"
             title="Consultar manual de estilo y reglas de subtitulado"
           >
             <BookOpen className="w-3 h-3 text-broadcast-textMuted" />
-            <span>Reglas</span>
+            <span className="hidden sm:inline">Reglas</span>
           </button>
         </div>
       </div>
 
       {/* Main Dynamic Viewport */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        {/* MODE 1: TIMELINE FIRST (Video Top + Timeline Bottom + Inspector Right) */}
+        {/* MODE 1: TIMELINE FIRST (Video Top + Timeline Bottom; Inspector on Desktop side) */}
         {editorMode === 'timeline' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Upper Area: Video Monitor + Compact Inspector */}
-            <div className="h-[56%] flex border-b border-broadcast-border overflow-hidden">
+            {/* Upper Area: Video Monitor + Inspector on desktop */}
+            <div className="h-[48%] md:h-[56%] flex border-b border-broadcast-border overflow-hidden">
               <div className="flex-1 overflow-hidden">
                 <VideoMonitor />
               </div>
-              <div className="w-80 lg:w-96 flex-shrink-0 overflow-hidden">
+              <div className="hidden md:block w-80 lg:w-96 flex-shrink-0 overflow-hidden">
                 <SegmentInspector onOpenSpeakersModal={() => setIsSpeakerDrawerOpen(true)} />
               </div>
             </div>
 
             {/* Lower Main Area: Full-width Horizontal Timeline */}
-            <div className="h-[44%] overflow-hidden">
+            <div className="h-[52%] md:h-[44%] overflow-hidden">
               <TimelineTrack />
             </div>
           </div>
         )}
 
-        {/* MODE 2: TEXTO FIRST (Video Left + Vertical SubtitleList Right) */}
-        {editorMode === 'texto' && (
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden h-full">
-            <div className="lg:col-span-7 h-full overflow-hidden flex flex-col">
+        {/* MODE 2: MOBILE INSPECTOR FOCUS */}
+        {editorMode === 'inspector' && (
+          <div className="flex-1 flex flex-col overflow-hidden md:hidden">
+            <div className="h-[40%] border-b border-broadcast-border overflow-hidden">
               <VideoMonitor />
             </div>
-            <div className="lg:col-span-5 h-full overflow-hidden flex flex-col">
+            <div className="h-[60%] overflow-y-auto">
+              <SegmentInspector onOpenSpeakersModal={() => setIsSpeakerDrawerOpen(true)} />
+            </div>
+          </div>
+        )}
+
+        {/* MODE 3: TEXTO FIRST (Video Left/Top + Vertical SubtitleList Right/Bottom) */}
+        {editorMode === 'texto' && (
+          <div className="flex-1 flex flex-col md:grid md:grid-cols-12 overflow-hidden h-full">
+            <div className="h-[40%] md:h-full md:col-span-7 overflow-hidden flex flex-col border-b md:border-b-0 md:border-r border-broadcast-border">
+              <VideoMonitor />
+            </div>
+            <div className="h-[60%] md:h-full md:col-span-5 overflow-hidden flex flex-col">
               <SubtitleList />
             </div>
           </div>
         )}
 
-        {/* MODE 3: SPLIT / HÍBRIDO (Top: Video + SubtitleList | Bottom: Timeline) */}
+        {/* MODE 4: SPLIT / HÍBRIDO (Top: Video + SubtitleList | Bottom: Timeline) */}
         {editorMode === 'split' && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="h-[60%] grid grid-cols-1 lg:grid-cols-12 overflow-hidden border-b border-broadcast-border">
