@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#1B1916"/>
+  <rect x="2" y="2" width="28" height="28" rx="4" fill="#24211D" stroke="#3A352E" stroke-width="1.5"/>
+  <text x="16" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#B79D72" text-anchor="middle">P</text>
+</svg>
