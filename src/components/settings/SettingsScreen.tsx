@@ -38,7 +38,7 @@ export const SettingsScreen: React.FC = () => {
           <p className="text-xs text-broadcast-textMuted mb-3">
             Entrada de archivos máster, enlace de streaming a vídeo y depósito de entregas finales.
           </p>
-          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-cyan-300">
+          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-[#D8D1C5]">
             src/services/integrations/index.ts → GoogleDriveConnector
           </div>
         </div>
@@ -57,7 +57,7 @@ export const SettingsScreen: React.FC = () => {
           <p className="text-xs text-broadcast-textMuted mb-3">
             Envío de audio/vídeo, recepción de transcript JSON, alineación de palabras, speakers y timecodes.
           </p>
-          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-cyan-300">
+          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-[#D8D1C5]">
             src/services/srtService.ts → normalizeSonixJSON()
           </div>
         </div>
@@ -76,7 +76,7 @@ export const SettingsScreen: React.FC = () => {
           <p className="text-xs text-broadcast-textMuted mb-3">
             Motor de conversión binaria real de subtítulos profesionales: SRT → PAC, SRT → EBU-STL.
           </p>
-          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-cyan-300">
+          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-[#D8D1C5]">
             src/services/integrations/index.ts → SubtitleEditCliBridge
           </div>
         </div>
@@ -95,7 +95,7 @@ export const SettingsScreen: React.FC = () => {
           <p className="text-xs text-broadcast-textMuted mb-3">
             Análisis de media: duración de vídeo a nivel de frame, framerate real, resolución y canales de audio.
           </p>
-          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-cyan-300">
+          <div className="bg-broadcast-darkest p-2.5 rounded text-[11px] font-mono text-[#D8D1C5]">
             src/services/integrations/index.ts → FFmpegProbeConnector
           </div>
         </div>

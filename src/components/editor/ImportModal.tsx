@@ -150,15 +150,15 @@ Speaker 04: Esperamos poder emitir en directo antes de las quince horas.
 
         {/* Feedback messages */}
         {errorMsg && (
-          <div className="mt-4 p-2.5 rounded bg-red-950/40 border border-red-800/50 text-red-300 text-xs flex items-center gap-2">
+          <div className="mt-4 p-2.5 rounded bg-[#B96852]/20 border border-[#B96852]/40 text-[#B96852] text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="mt-4 p-2.5 rounded bg-emerald-950/40 border border-emerald-800/50 text-emerald-300 text-xs flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="mt-4 p-2.5 rounded bg-[#2B2722] border border-[#3A352E] text-[#D8D1C5] text-xs flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-[#D8D1C5] flex-shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}

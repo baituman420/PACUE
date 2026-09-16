@@ -109,7 +109,7 @@ export const ActiveJobScreen: React.FC = () => {
           {activeStage === 'qc' && (
             <button
               onClick={() => setActiveStage('exportar')}
-              className="px-2.5 py-1 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-white text-xs font-medium flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-semibold flex items-center gap-1 transition-colors"
             >
               <span>Exportar</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ export const ActiveJobScreen: React.FC = () => {
           {activeStage === 'exportar' && (
             <button
               onClick={() => setActiveStage('entregar')}
-              className="px-2.5 py-1 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-white text-xs font-medium flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-semibold flex items-center gap-1 transition-colors"
             >
               <span>Entregar</span>
               <ChevronRight className="w-3.5 h-3.5" />

@@ -58,7 +58,7 @@ export const QueueScreen: React.FC = () => {
               setActiveJobId(inProgressJobs[0].id);
               setCurrentView('trabajo');
             }}
-            className="px-4 py-2 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg"
+            className="px-4 py-2 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg"
           >
             <span>Continuar Edición</span>
             <ArrowRight className="w-4 h-4" />
@@ -89,7 +89,7 @@ export const QueueScreen: React.FC = () => {
               >
                 {/* Priority Corner Badge */}
                 {isHighPriority && (
-                  <div className="absolute top-0 right-0 px-3 py-1 bg-red-600/90 text-white font-mono text-[10px] font-bold uppercase tracking-wider rounded-bl">
+                  <div className="absolute top-0 right-0 px-3 py-1 bg-[#B96852] text-[#1B1916] font-mono text-[10px] font-bold uppercase tracking-wider rounded-bl">
                     Prioridad Alta
                   </div>
                 )}
@@ -124,7 +124,7 @@ export const QueueScreen: React.FC = () => {
                     </div>
                     <div className="flex items-center justify-between text-broadcast-textMuted">
                       <span>Entrega límite:</span>
-                      <span className="text-amber-400 font-semibold">{job.deadline}</span>
+                      <span className="text-broadcast-amber font-semibold">{job.deadline}</span>
                     </div>
                     <div className="flex items-center justify-between text-broadcast-textMuted">
                       <span>Formato salida:</span>
@@ -141,7 +141,7 @@ export const QueueScreen: React.FC = () => {
                 <div className="mt-5 pt-1">
                   <button
                     onClick={() => pickJob(job.id)}
-                    className="w-full py-2.5 px-4 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg"
+                    className="w-full py-2.5 px-4 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg"
                   >
                     <span>COGER TRABAJO</span>
                     <ArrowRight className="w-4 h-4" />

@@ -62,20 +62,20 @@ export const Sidebar: React.FC = () => {
               onClick={() => setCurrentView(item.id)}
               className={`w-full flex items-center justify-between px-2.5 py-2 rounded-r text-xs transition-colors font-sans relative ${
                 isActive
-                  ? 'bg-broadcast-surface text-broadcast-textPrimary font-medium border-l-2 border-broadcast-accent'
-                  : 'text-broadcast-textSecondary hover:bg-broadcast-surface/50 hover:text-broadcast-textPrimary border-l-2 border-transparent'
+                  ? 'bg-[#2B2722] text-[#D8D1C5] font-medium border-l-2 border-[#D8D1C5]'
+                  : 'text-[#BEB6AA] hover:bg-[#24211D]/80 hover:text-[#D8D1C5] border-l-2 border-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-broadcast-accent' : 'text-broadcast-textMuted'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#D8D1C5]' : 'text-[#8F887E]'}`} />
                 <span>{item.label}</span>
               </div>
 
               {item.badge !== undefined && (
                 <span className={`px-1.5 py-0.2 rounded text-[10px] font-sans ${
                   isActive
-                    ? 'bg-broadcast-panel text-broadcast-accent border border-broadcast-border'
-                    : 'text-broadcast-textMuted bg-broadcast-darkest/60'
+                    ? 'bg-[#24211D] text-[#D8D1C5] border border-[#3A352E]'
+                    : 'text-[#8F887E] bg-[#1B1916]'
                 }`}>
                   {item.badge}
                 </span>
@@ -86,10 +86,10 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Footer System Status - Quiet */}
-      <div className="p-3 border-t border-broadcast-border text-[10px] text-broadcast-textMuted font-sans">
+      <div className="p-3 border-t border-broadcast-border text-[10px] text-[#8F887E] font-sans">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-broadcast-success" />
-          <span className="text-broadcast-textSecondary">PACUE v0.1</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#8F887E]" />
+          <span className="text-[#BEB6AA]">PACUE v0.1</span>
         </div>
         <div className="text-broadcast-textMuted text-[9px]">
           Sincronización audio & subtítulo

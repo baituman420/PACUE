@@ -130,7 +130,7 @@ export const SpeakerDrawer: React.FC<SpeakerDrawerProps> = ({ isOpen, onClose })
                   <div className="flex items-center gap-2.5">
                     <span
                       className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: spk.color || '#38bdf8' }}
+                      style={{ backgroundColor: spk.color || '#D8D1C5' }}
                     />
                     <div>
                       <div className="flex items-center gap-2">
@@ -149,8 +149,8 @@ export const SpeakerDrawer: React.FC<SpeakerDrawerProps> = ({ isOpen, onClose })
                             <AlertCircle className="w-3 h-3" /> Sin identificar
                           </span>
                         ) : (
-                          <span className="text-broadcast-success flex items-center gap-1">
-                            <UserCheck className="w-3 h-3" /> Confirmado
+                          <span className="text-[#BEB6AA] flex items-center gap-1">
+                            <Check className="w-3 h-3 text-[#D8D1C5]" /> Confirmado
                           </span>
                         )}
                       </div>
@@ -252,7 +252,7 @@ export const SpeakerDrawer: React.FC<SpeakerDrawerProps> = ({ isOpen, onClose })
                       name="applyScope"
                       checked={applyMode === 'all'}
                       onChange={() => setApplyMode('all')}
-                      className="accent-cyan-400"
+                      className="accent-[#B79D72]"
                     />
                     <span>
                       <strong>Todas las intervenciones de {editingSpeaker.displayName}</strong>{' '}
@@ -265,7 +265,7 @@ export const SpeakerDrawer: React.FC<SpeakerDrawerProps> = ({ isOpen, onClose })
                       name="applyScope"
                       checked={applyMode === 'single'}
                       onChange={() => setApplyMode('single')}
-                      className="accent-cyan-400"
+                      className="accent-[#B79D72]"
                     />
                     <span>Sólo este bloque seleccionado</span>
                   </label>

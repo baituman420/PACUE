@@ -9,24 +9,34 @@ export default {
     extend: {
       colors: {
         broadcast: {
-          darkest: '#1A1917',     // Fondo general cálido
-          panel: '#201F1C',       // Fondo secundario
-          surface: '#262420',     // Panel
-          surfaceHover: '#2C2925',// Superficie elevada
-          border: '#39352F',      // Bordes suaves y tenues
-          borderLight: '#48433C',
-          textMuted: '#817C74',   // Texto tenue
-          textSecondary: '#AAA49A',// Texto secundario
-          textPrimary: '#DDD8CF', // Texto principal cálido
-          accent: '#568F87',      // Teal apagado (foco, playhead, selección activa)
-          accentHover: '#467770',
-          accentMuted: '#2B423F',
-          accentWave: '#759E96',  // Onda seleccionada
-          waveBg: '#201F1C',      // Fondo waveform
-          waveBar: '#77736C',     // Barra onda normal
-          amber: '#C28B38',       // Advertencia cálida
-          danger: '#B85D43',      // Terracota suave
-          success: '#628A5B',     // Verde musgo suave
+          darkest: '#1B1916',      // Fondo general cálido
+          panel: '#24211D',        // Fondo secundario / paneles
+          surface: '#24211D',      // Panel surface
+          surfaceHover: '#2B2722', // Superficie elevada
+          elevated: '#2B2722',     // Superficie elevada
+          border: '#3A352E',       // Bordes suaves y tenues
+          borderLight: '#4B453D',  // Borde interactivo
+          textMuted: '#8F887E',    // Texto tenue
+          textSecondary: '#BEB6AA',// Texto secundario (perla secundario)
+          textPrimary: '#D8D1C5',  // Texto principal (perla primario)
+          pearl: '#D8D1C5',        // Perla primario
+          pearlSecondary: '#BEB6AA',// Perla secundario
+          focus: '#C8BDAA',        // Focus / select
+          strongFocus: '#E0D5C3',  // Strong focus
+          champagne: '#B79D72',    // Champagne accent
+          accent: '#B79D72',       // Champagne accent principal
+          accentHover: '#C8BDAA',  // Champagne hover
+          accentMuted: '#3A352E',  // Muted background
+          accentWave: '#B9AA94',   // Área seleccionada / onda activa
+          waveBg: '#211E1A',       // Fondo waveform
+          waveBar: '#777066',      // Barra onda normal
+          wavePeak: '#999084',     // Picos destacados
+          playhead: '#D6C7AE',     // Playhead perla / champagne
+          amber: '#C18B52',        // Warning cálido
+          warning: '#C18B52',      // Warning cálido
+          danger: '#B96852',       // Terracota suave / error
+          error: '#B96852',        // Terracota suave / error
+          success: '#D8D1C5',      // Estado correcto en tono neutro/perla (sin verde)
         }
       },
       fontFamily: {

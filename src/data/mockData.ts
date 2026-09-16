@@ -58,35 +58,35 @@ export const INITIAL_SPEAKERS: Record<string, Speaker> = {
     id: 'spk_01',
     displayName: 'JUAN',
     confirmed: true,
-    color: '#38bdf8', // Neon Sky Blue
+    color: '#D8D1C5', // Pearl primary
     role: 'Presentador de plató'
   },
   'spk_02': {
     id: 'spk_02',
     displayName: 'ELENA',
     confirmed: true,
-    color: '#a78bfa', // Purple
+    color: '#B79D72', // Champagne accent
     role: 'Corresponsal en exteriores'
   },
   'spk_03': {
     id: 'spk_03',
     displayName: 'Speaker 03',
     confirmed: false,
-    color: '#f59e0b', // Amber
+    color: '#C18B52', // Warm amber / sand
     role: 'Sin identificar'
   },
   'spk_04': {
     id: 'spk_04',
     displayName: 'Speaker 04',
     confirmed: false,
-    color: '#ec4899', // Pink
+    color: '#BEB6AA', // Pearl secondary
     role: 'Sin identificar'
   },
   'spk_05': {
     id: 'spk_05',
     displayName: 'Speaker 05',
     confirmed: false,
-    color: '#10b981', // Emerald
+    color: '#8F887E', // Muted text/sand
     role: 'Sin identificar'
   }
 };

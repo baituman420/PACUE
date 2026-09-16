@@ -98,7 +98,7 @@ export function parseSRT(srtContent: string): {
   let speakerCounter = 1;
 
   const defaultPalette = [
-    '#38bdf8', '#a78bfa', '#f59e0b', '#ec4899', '#10b981', '#6366f1', '#f43f5e', '#14b8a6'
+    '#D8D1C5', '#B79D72', '#C18B52', '#BEB6AA', '#8F887E', '#C8BDAA', '#E0D5C3'
   ];
 
   rawBlocks.forEach((block, idx) => {
@@ -234,7 +234,7 @@ export function normalizeSonixJSON(sonixJson: any): {
           id: spkId,
           displayName: `Speaker ${s.speaker || '01'}`,
           confirmed: false,
-          color: '#38bdf8'
+          color: '#D8D1C5'
         };
       }
       segments.push({

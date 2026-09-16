@@ -60,7 +60,7 @@ export const HistoryScreen: React.FC = () => {
                 <td className="p-3.5 text-broadcast-textMuted">
                   {item.completedAt}
                 </td>
-                <td className="p-3.5 text-cyan-300 font-semibold">
+                <td className="p-3.5 text-[#D8D1C5] font-semibold">
                   {item.durationFormatted}
                 </td>
                 <td className="p-3.5">
@@ -73,8 +73,8 @@ export const HistoryScreen: React.FC = () => {
                   <div className="text-[10px] text-broadcast-textMuted">{item.destinationFolder}</div>
                 </td>
                 <td className="p-3.5 text-right">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
-                    <CheckCircle2 className="w-3 h-3" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#2B2722] text-[#D8D1C5] border border-[#3A352E]">
+                    <CheckCircle2 className="w-3 h-3 text-[#D8D1C5]" />
                     {item.status}
                   </span>
                 </td>

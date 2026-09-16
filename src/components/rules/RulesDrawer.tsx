@@ -111,7 +111,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-broadcast-border bg-broadcast-darkest flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded bg-teal-950/60 border border-teal-600/40 text-teal-400 flex items-center justify-center">
+            <div className="w-7 h-7 rounded bg-[#2B2722] border border-[#3A352E] text-[#B79D72] flex items-center justify-center">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
@@ -119,7 +119,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
                 <h2 className="text-sm font-semibold tracking-wide text-white">
                   Reglas del Trabajo
                 </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-broadcast-surface text-teal-300 font-medium border border-broadcast-border">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-broadcast-surface text-[#D8D1C5] font-medium border border-broadcast-border">
                   {activeJob?.clientName || 'RTVE'} SDH
                 </span>
               </div>
@@ -147,7 +147,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar norma, ejemplo o criterio..."
-              className="w-full pl-8 pr-3 py-1.5 bg-broadcast-surface rounded border border-broadcast-border text-xs text-white placeholder-broadcast-textMuted focus:outline-none focus:border-broadcast-accent font-sans"
+              className="w-full pl-8 pr-3 py-1.5 bg-broadcast-surface rounded border border-broadcast-border text-xs text-white placeholder-broadcast-textMuted focus:outline-none focus:border-[#B79D72] font-sans"
             />
           </div>
 
@@ -157,7 +157,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               onClick={() => setLevelFilter('all')}
               className={`px-2.5 py-1 rounded transition-colors ${
                 levelFilter === 'all'
-                  ? 'bg-broadcast-accent text-black font-bold'
+                  ? 'bg-[#B79D72] text-[#1B1916] font-bold'
                   : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
@@ -167,7 +167,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               onClick={() => setLevelFilter('general')}
               className={`px-2.5 py-1 rounded transition-colors ${
                 levelFilter === 'general'
-                  ? 'bg-broadcast-accent text-black font-bold'
+                  ? 'bg-[#B79D72] text-[#1B1916] font-bold'
                   : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
@@ -177,7 +177,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               onClick={() => setLevelFilter('client')}
               className={`px-2.5 py-1 rounded transition-colors ${
                 levelFilter === 'client'
-                  ? 'bg-broadcast-accent text-black font-bold'
+                  ? 'bg-[#B79D72] text-[#1B1916] font-bold'
                   : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
@@ -187,7 +187,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               onClick={() => setLevelFilter('project')}
               className={`px-2.5 py-1 rounded transition-colors ${
                 levelFilter === 'project'
-                  ? 'bg-broadcast-accent text-black font-bold'
+                  ? 'bg-[#B79D72] text-[#1B1916] font-bold'
                   : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
@@ -201,7 +201,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
             <button
               onClick={() => setCategoryFilter('all')}
               className={`px-2 py-0.5 rounded transition-colors ${
-                categoryFilter === 'all' ? 'bg-teal-950 text-teal-300 font-medium border border-teal-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
+                categoryFilter === 'all' ? 'bg-[#2B2722] text-[#D8D1C5] font-medium border border-[#3A352E]' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
               Todas
@@ -211,7 +211,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
                 className={`px-2 py-0.5 rounded whitespace-nowrap transition-colors ${
-                  categoryFilter === cat ? 'bg-teal-950 text-teal-300 font-medium border border-teal-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
+                  categoryFilter === cat ? 'bg-[#2B2722] text-[#D8D1C5] font-medium border border-[#3A352E]' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
                 }`}
               >
                 {categoryLabels[cat] || cat}
@@ -237,20 +237,14 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
                   onClick={() => setSelectedRuleId(rule.id)}
                   className={`p-3.5 rounded-lg border transition-all ${
                     isHighlighted
-                      ? 'border-teal-500 bg-broadcast-surface shadow-md'
+                      ? 'border-[#B79D72] bg-broadcast-surface shadow-md'
                       : 'border-broadcast-border bg-broadcast-darkest/80 hover:border-broadcast-borderLight'
                   }`}
                 >
                   {/* Top Bar of Rule: Level & Category & Severity */}
                   <div className="flex items-center justify-between gap-2 mb-1.5 text-[10px] font-mono">
                     <div className="flex items-center gap-1.5">
-                      <span className={`px-1.5 py-0.5 rounded font-medium uppercase ${
-                        rule.level === 'general'
-                          ? 'bg-blue-950/60 text-blue-300 border border-blue-800/40'
-                          : rule.level === 'client'
-                          ? 'bg-purple-950/60 text-purple-300 border border-purple-800/40'
-                          : 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40'
-                      }`}>
+                      <span className="px-1.5 py-0.5 rounded font-medium uppercase bg-[#2B2722] text-[#BEB6AA] border border-[#3A352E]">
                         {rule.level === 'general' ? 'General UNE' : rule.level === 'client' ? `Cliente: ${activeJob?.clientName || 'RTVE'}` : 'Específica Proyecto'}
                       </span>
 
@@ -263,17 +257,17 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
 
                     <div className="flex items-center gap-1.5">
                       {rule.hasAutoCheck && (
-                        <span className="px-1.5 py-0.5 rounded bg-teal-950/60 text-teal-300 border border-teal-700/40 font-medium" title="Esta regla genera advertencias automáticas en el motor QC">
+                        <span className="px-1.5 py-0.5 rounded bg-[#2B2722] text-[#D8D1C5] border border-[#3A352E] font-medium" title="Esta regla genera advertencias automáticas en el motor QC">
                           ✓ Auto QC
                         </span>
                       )}
 
                       <span className={`px-1.5 py-0.5 rounded font-bold uppercase ${
                         rule.severity === 'bloqueante'
-                          ? 'bg-red-950 text-red-400 border border-red-800/50'
+                          ? 'bg-[#B96852]/20 text-[#B96852] border border-[#B96852]/40'
                           : rule.severity === 'advertencia'
-                          ? 'bg-amber-950 text-amber-400 border border-amber-800/50'
-                          : 'bg-zinc-800 text-zinc-300'
+                          ? 'bg-[#C18B52]/20 text-[#C18B52] border border-[#C18B52]/40'
+                          : 'bg-[#2B2722] text-[#8F887E]'
                       }`}>
                         {rule.severity}
                       </span>
@@ -292,15 +286,15 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
                   {(rule.correctExample || rule.incorrectExample) && (
                     <div className="space-y-1.5 p-2.5 rounded bg-broadcast-darkest border border-broadcast-border text-xs font-mono">
                       {rule.correctExample && (
-                        <div className="flex items-start gap-2 text-emerald-400">
+                        <div className="flex items-start gap-2 text-[#D8D1C5]">
                           <span className="font-bold flex-shrink-0">✓ Correcto:</span>
-                          <span className="text-emerald-200 whitespace-pre-line">{rule.correctExample}</span>
+                          <span className="text-[#BEB6AA] whitespace-pre-line">{rule.correctExample}</span>
                         </div>
                       )}
                       {rule.incorrectExample && (
-                        <div className="flex items-start gap-2 text-red-400 pt-1 border-t border-broadcast-border/50">
+                        <div className="flex items-start gap-2 text-[#B96852] pt-1 border-t border-broadcast-border/50">
                           <span className="font-bold flex-shrink-0">✗ Incorrecto:</span>
-                          <span className="text-red-200 whitespace-pre-line">{rule.incorrectExample}</span>
+                          <span className="text-[#BEB6AA] whitespace-pre-line">{rule.incorrectExample}</span>
                         </div>
                       )}
                     </div>

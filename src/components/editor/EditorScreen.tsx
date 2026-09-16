@@ -40,7 +40,7 @@ export const EditorScreen: React.FC = () => {
               onClick={() => setEditorMode('timeline')}
               className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'timeline'
-                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Enfoque Timeline-First: Vídeo superior + Línea temporal con waveform y bloques espaciales"
@@ -52,7 +52,7 @@ export const EditorScreen: React.FC = () => {
               onClick={() => setEditorMode('texto')}
               className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'texto'
-                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Enfoque Texto: Revisión vertical masiva, filtros de QC y búsqueda"
@@ -64,7 +64,7 @@ export const EditorScreen: React.FC = () => {
               onClick={() => setEditorMode('split')}
               className={`px-2.5 py-0.5 rounded text-xs font-sans transition-colors ${
                 editorMode === 'split'
-                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-broadcast-accent'
+                  ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary font-medium border border-[#B79D72]'
                   : 'text-broadcast-textMuted hover:text-broadcast-textSecondary'
               }`}
               title="Vista Híbrida: Vídeo + Lista de texto + Timeline inferior"
@@ -83,8 +83,8 @@ export const EditorScreen: React.FC = () => {
               <span
                 className="font-medium px-1 rounded text-[10px]"
                 style={{
-                  color: speakers[selectedSegment.speakerId]?.color || '#AAA49A',
-                  backgroundColor: `${speakers[selectedSegment.speakerId]?.color || '#AAA49A'}15`
+                  color: speakers[selectedSegment.speakerId]?.color || '#BEB6AA',
+                  backgroundColor: `${speakers[selectedSegment.speakerId]?.color || '#BEB6AA'}15`
                 }}
               >
                 {speakers[selectedSegment.speakerId]?.displayName}

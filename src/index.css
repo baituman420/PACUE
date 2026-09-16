@@ -9,8 +9,8 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #1A1917;
-  color: #DDD8CF;
+  background-color: #1B1916;
+  color: #D8D1C5;
   font-family: 'Inter', sans-serif;
   user-select: none;
 }
@@ -22,16 +22,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #201F1C;
+  background: #24211D;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #39352F;
+  background: #3A352E;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #48433C;
+  background: #4B453D;
 }
 
 .scrollbar-none::-webkit-scrollbar {

@@ -176,10 +176,10 @@ export const VideoMonitor: React.FC = () => {
           const smpte = secondsToSMPTE(currentTime, activeJob?.fps || 25);
           ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
           ctx.fillRect(w - 220, 24, 196, 40);
-          ctx.strokeStyle = '#38bdf8';
+          ctx.strokeStyle = '#3A352E';
           ctx.lineWidth = 1;
           ctx.strokeRect(w - 220, 24, 196, 40);
-          ctx.fillStyle = '#00e5ff';
+          ctx.fillStyle = '#D8D1C5';
           ctx.font = 'bold 18px "JetBrains Mono", monospace';
           ctx.fillText(`TC ${smpte}`, w - 206, 50);
 
@@ -273,7 +273,7 @@ export const VideoMonitor: React.FC = () => {
       {/* Video Viewport with Subtitle Overlay */}
       <div 
         className={`relative flex-1 bg-black flex items-center justify-center overflow-hidden cursor-pointer ${
-          isDraggingFile ? 'ring-2 ring-broadcast-accent bg-blue-950/20' : ''
+          isDraggingFile ? 'ring-2 ring-[#B79D72] bg-[#2B2722]/60' : ''
         }`}
         onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
         onDragLeave={() => setIsDraggingFile(false)}
@@ -320,7 +320,7 @@ export const VideoMonitor: React.FC = () => {
               {activeSpeaker && (
                 <div 
                   className="text-xs font-bold tracking-wider mb-0.5 uppercase"
-                  style={{ color: activeSpeaker.color || '#38bdf8' }}
+                  style={{ color: activeSpeaker.color || '#D8D1C5' }}
                 >
                   {activeSpeaker.displayName}
                 </div>

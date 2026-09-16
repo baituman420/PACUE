@@ -115,8 +115,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Speakers & Segments
   const [speakers, setSpeakers] = useState<Record<string, Speaker>>(() => {
+    const sanitizeWarmColors = (spks: Record<string, Speaker>): Record<string, Speaker> => {
+      const colorMap: Record<string, string> = {
+        '#38bdf8': '#D8D1C5',
+        '#a78bfa': '#B79D72',
+        '#b388ff': '#B79D72',
+        '#f59e0b': '#C18B52',
+        '#ec4899': '#BEB6AA',
+        '#10b981': '#8F887E',
+        '#00e676': '#D8D1C5',
+      };
+      const clean: Record<string, Speaker> = {};
+      for (const [id, s] of Object.entries(spks)) {
+        clean[id] = {
+          ...s,
+          color: colorMap[s.color?.toLowerCase()] || s.color || '#D8D1C5'
+        };
+      }
+      return clean;
+    };
+
     const saved = localStorage.getItem('pacue_speakers');
-    return saved ? JSON.parse(saved) : INITIAL_SPEAKERS;
+    return saved ? sanitizeWarmColors(JSON.parse(saved)) : INITIAL_SPEAKERS;
   });
 
   const [segments, setSegments] = useState<SubtitleSegment[]>(() => {

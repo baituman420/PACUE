@@ -58,7 +58,7 @@ export const ExportScreen: React.FC = () => {
     <div className="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full">
       {/* Header */}
       <div className="flex items-center gap-3 pb-6 border-b border-broadcast-border">
-        <div className="p-3 rounded-lg bg-cyan-950/40 border border-broadcast-accent/40 text-broadcast-accent">
+        <div className="p-3 rounded-lg bg-[#2B2722] border border-[#3A352E] text-[#B79D72]">
           <Download className="w-8 h-8" />
         </div>
         <div>
@@ -104,10 +104,10 @@ export const ExportScreen: React.FC = () => {
 
         {/* Notice for PAC Simulated vs Real SRT */}
         {selectedFormat === 'PAC' && (
-          <div className="p-3.5 rounded bg-blue-950/30 border border-blue-800/40 text-xs text-blue-300 flex items-start gap-2.5">
-            <Info className="w-4 h-4 text-broadcast-accent flex-shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded bg-[#2B2722] border border-[#3A352E] text-xs text-[#BEB6AA] flex items-start gap-2.5">
+            <Info className="w-4 h-4 text-[#B79D72] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-broadcast-accent">Conversión PAC — integración pendiente</span>
+              <span className="font-bold text-[#D8D1C5]">Conversión PAC — integración pendiente</span>
               <p className="text-[11px] text-broadcast-textMuted mt-0.5">
                 Para respetar la fidelidad técnica y evitar archivos binarios simulados no estándar, en esta fase el flujo de PAC se completa registrando la entrega simulada. Cuando conectemos Subtitle Edit CLI se compilará el `.pac` real.
               </p>
@@ -116,10 +116,10 @@ export const ExportScreen: React.FC = () => {
         )}
 
         {selectedFormat === 'SRT' && (
-          <div className="p-3.5 rounded bg-emerald-950/30 border border-emerald-800/40 text-xs text-emerald-300 flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-broadcast-success flex-shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded bg-[#2B2722] border border-[#3A352E] text-xs text-[#D8D1C5] flex items-start gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-[#D8D1C5] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-broadcast-success">Generación SRT Real Disponible</span>
+              <span className="font-bold text-[#D8D1C5]">Generación SRT Real Disponible</span>
               <p className="text-[11px] text-broadcast-textMuted mt-0.5">
                 Este formato genera y descarga un archivo `.srt` estándar completamente válido y corregido con los nombres de personajes y timecodes actuales.
               </p>
@@ -135,7 +135,7 @@ export const ExportScreen: React.FC = () => {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-broadcast-textMuted">Perfil de servicio:</span>
-            <span className="text-cyan-400">{activeJob?.serviceType || 'Subtitulado SDH'}</span>
+            <span className="text-[#D8D1C5]">{activeJob?.serviceType || 'Subtitulado SDH'}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-broadcast-textMuted">Framerate de masterización:</span>
@@ -177,9 +177,9 @@ export const ExportScreen: React.FC = () => {
 
         {/* Success Output */}
         {isFinished && (
-          <div className="p-4 rounded-lg bg-emerald-950/30 border border-emerald-600/40 space-y-4">
-            <div className="flex items-center gap-2.5 text-emerald-400">
-              <CheckCircle2 className="w-5 h-5" />
+          <div className="p-4 rounded-lg bg-[#2B2722] border border-[#3A352E] space-y-4">
+            <div className="flex items-center gap-2.5 text-[#D8D1C5]">
+              <CheckCircle2 className="w-5 h-5 text-[#D8D1C5]" />
               <span className="text-sm font-bold">✓ Archivo generado correctamente</span>
             </div>
 
@@ -191,7 +191,7 @@ export const ExportScreen: React.FC = () => {
             {selectedFormat === 'SRT' && (
               <button
                 onClick={handleDownloadRealSRT}
-                className="py-2 px-4 rounded bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold flex items-center gap-2 transition-colors shadow"
+                className="py-2 px-4 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-bold flex items-center gap-2 transition-colors shadow"
               >
                 <Download className="w-4 h-4" />
                 <span>Descargar archivo SRT ahora</span>
@@ -200,7 +200,7 @@ export const ExportScreen: React.FC = () => {
 
             <button
               onClick={handleProceedToDelivery}
-              className="w-full py-3 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.99] mt-2"
+              className="w-full py-3 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg active:scale-[0.99] mt-2"
             >
               <span>CONTINUAR A ENTREGA FINAL</span>
               <ArrowRight className="w-4 h-4" />

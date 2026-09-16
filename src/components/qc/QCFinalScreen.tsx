@@ -36,7 +36,7 @@ export const QCFinalScreen: React.FC = () => {
     <div className="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full">
       {/* Header */}
       <div className="flex items-center gap-3 pb-6 border-b border-broadcast-border">
-        <div className="p-3 rounded-lg bg-cyan-950/40 border border-broadcast-accent/40 text-broadcast-accent">
+        <div className="p-3 rounded-lg bg-[#2B2722] border border-[#3A352E] text-[#B79D72]">
           <ShieldCheck className="w-8 h-8" />
         </div>
         <div>
@@ -149,9 +149,9 @@ export const QCFinalScreen: React.FC = () => {
           )}
 
           {qcCounts['HABLANTE ?'] === 0 && qcCounts['LECTURA RÁPIDA'] === 0 && qcCounts['SOLAPAMIENTO'] === 0 && (
-            <div className="p-4 rounded bg-emerald-950/20 border border-emerald-600/30 text-emerald-400 text-xs flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
-              <span>¡Excelente! No hay advertencias pendientes en el proyecto.</span>
+            <div className="p-4 rounded bg-[#2B2722] border border-[#3A352E] text-[#D8D1C5] text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-[#D8D1C5]" />
+              <span>Conforme. No hay advertencias pendientes en el proyecto.</span>
             </div>
           )}
         </div>
@@ -169,7 +169,7 @@ export const QCFinalScreen: React.FC = () => {
 
         <button
           onClick={handleProceedToExport}
-          className="px-6 py-2.5 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg active:scale-95"
+          className="px-6 py-2.5 rounded bg-[#B79D72] hover:bg-[#C8BDAA] text-[#1B1916] text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg active:scale-95"
         >
           <span>CONTINUAR DE TODOS MODOS</span>
           <ArrowRight className="w-4 h-4" />

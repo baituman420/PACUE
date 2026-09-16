@@ -54,9 +54,29 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
   const [isScrubbing, setIsScrubbing] = useState<boolean>(false);
   const [dragState, setDragState] = useState<DragState | null>(null);
 
+  // Viewport tracking for windowed canvas rendering (prevents exceeding GPU max texture limit)
+  const [scrollLeftState, setScrollLeftState] = useState<number>(0);
+  const [visibleWidthState, setVisibleWidthState] = useState<number>(1800);
+
   const fps = activeJob?.fps || 25;
   const frameDuration = 1 / fps; // 0.040s at 25 fps
   const totalWidth = Math.max(1200, duration * pixelsPerSecond);
+
+  // Initialize container visible dimensions
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      setVisibleWidthState(scrollContainerRef.current.clientWidth || 1800);
+      setScrollLeftState(scrollContainerRef.current.scrollLeft || 0);
+    }
+  }, []);
+
+  const handleContainerScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    setScrollLeftState(target.scrollLeft);
+    if (target.clientWidth > 0 && Math.abs(target.clientWidth - visibleWidthState) > 40) {
+      setVisibleWidthState(target.clientWidth);
+    }
+  };
 
   // Waveform Height Mode
   const waveformHeight = useMemo(() => {
@@ -112,8 +132,13 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     }
   }, [selectedSegmentId, pixelsPerSecond]);
 
-  // Render Waveform Canvas - Unified coordinate scale (pixelsPerSecond)
-  // Palette: Fondo #201F1C, onda #77736C, onda seleccionada #759E96
+  // Render Waveform Canvas - Windowed visible rendering (immune to canvas GPU texture limits)
+  // Exact requested palette:
+  // Fondo: #211E1A
+  // Onda: #777066
+  // Picos destacados: #999084
+  // Área seleccionada: #B9AA94 con baja opacidad
+  // Playhead: #D6C7AE
   useEffect(() => {
     const canvas = waveformCanvasRef.current;
     if (!canvas) return;
@@ -121,19 +146,25 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
     if (!ctx) return;
 
     const h = waveformHeight;
+    const buffer = 300;
+    const startX = Math.max(0, scrollLeftState - buffer);
+    const renderWidth = Math.min(totalWidth - startX, visibleWidthState + buffer * 2);
+
+    if (renderWidth <= 0) return;
+
     canvas.height = h;
-    canvas.width = totalWidth;
+    canvas.width = renderWidth;
 
-    // Solid dark warm background
-    ctx.fillStyle = '#201F1C';
-    ctx.fillRect(0, 0, totalWidth, h);
+    // 1. Fondo waveform sólido cálido: #211E1A
+    ctx.fillStyle = '#211E1A';
+    ctx.fillRect(0, 0, renderWidth, h);
 
-    // Center zero guide line in soft earthy slate
-    ctx.strokeStyle = '#2C2925';
+    // 2. Línea guía central en tono neutro sutil (#2B2722)
+    ctx.strokeStyle = '#2B2722';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, h / 2);
-    ctx.lineTo(totalWidth, h / 2);
+    ctx.lineTo(renderWidth, h / 2);
     ctx.stroke();
 
     // Determine currently active selected interval
@@ -144,14 +175,26 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
       ? dragState.currentEnd
       : (selectedSegment?.endSeconds ?? -1);
 
-    const step = 4; // px per bar
-    const barsCount = Math.ceil(totalWidth / step);
+    // 3. Área seleccionada en audio: #B9AA94 con baja opacidad
+    if (selStart >= 0 && selEnd > selStart) {
+      const selPxStart = selStart * pixelsPerSecond - startX;
+      const selPxEnd = selEnd * pixelsPerSecond - startX;
+      const x1 = Math.max(0, selPxStart);
+      const x2 = Math.min(renderWidth, selPxEnd);
+      if (x2 > x1) {
+        ctx.fillStyle = 'rgba(185, 170, 148, 0.14)';
+        ctx.fillRect(x1, 0, x2 - x1, h);
+      }
+    }
 
+    const step = 4; // px per bar
+    const barsCount = Math.ceil(renderWidth / step);
     const isRealAudio = !!(waveformData && waveformData.isReal && waveformData.peaks.length > 0);
 
     for (let i = 0; i < barsCount; i++) {
-      const barX = i * step;
-      const t = barX / pixelsPerSecond;
+      const localBarX = i * step;
+      const globalBarX = startX + localBarX;
+      const t = globalBarX / pixelsPerSecond;
       const isInSelection = selStart >= 0 && t >= selStart && t <= selEnd;
 
       let amplitude = 0;
@@ -174,19 +217,20 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
         }
       }
 
-      // Warm earthy color grading:
-      // In selection: #759E96 (soft muted teal wave)
-      // Normal wave: #77736C
+      // Exact color grading:
+      // Área seleccionada: #B9AA94
+      // Picos destacados: #999084
+      // Onda: #777066
       if (isInSelection) {
-        ctx.fillStyle = '#759E96';
+        ctx.fillStyle = '#B9AA94';
       } else {
-        ctx.fillStyle = amplitude > 4 ? '#77736C' : '#39352F';
+        ctx.fillStyle = amplitude > (h * 0.42) ? '#999084' : '#777066';
       }
 
       const barY = (h - amplitude) / 2;
-      ctx.fillRect(barX, barY, 2.2, amplitude);
+      ctx.fillRect(localBarX, barY, 2.2, amplitude);
     }
-  }, [totalWidth, pixelsPerSecond, waveformHeight, waveformData, segments, selectedSegment, dragState]);
+  }, [scrollLeftState, visibleWidthState, totalWidth, pixelsPerSecond, waveformHeight, waveformData, segments, selectedSegment, dragState]);
 
   // Scrubbing on Ruler / Waveform Track via Pointer Events
   const handleTimelinePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -410,7 +454,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
             onClick={() => setSnapToFrames(!snapToFrames)}
             className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors border ${
               snapToFrames
-                ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary border-broadcast-accent'
+                ? 'bg-broadcast-surfaceHover text-broadcast-textPrimary border-[#B79D72]'
                 : 'bg-broadcast-surface text-broadcast-textMuted border-broadcast-border hover:text-broadcast-textSecondary'
             }`}
             title={`Ajuste magnético a fotogramas (${fps} fps, pasos de ${Math.round(frameDuration * 1000)}ms)`}
@@ -444,7 +488,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
               max={220}
               value={pixelsPerSecond}
               onChange={(e) => setPixelsPerSecond(Number(e.target.value))}
-              className="w-14 accent-[#568F87] cursor-pointer h-1"
+              className="w-14 accent-[#B79D72] cursor-pointer h-1"
             />
             <ZoomIn className="w-3.5 h-3.5 text-broadcast-textMuted" />
           </div>
@@ -466,6 +510,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
       {/* Main Horizontal Scrollable Timeline Area */}
       <div 
         ref={scrollContainerRef}
+        onScroll={handleContainerScroll}
         className="flex-1 overflow-x-auto overflow-y-hidden relative scrollbar-thin bg-broadcast-darkest"
       >
         <div 
@@ -494,22 +539,26 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
             ))}
           </div>
 
-          {/* TRACK 2: WAVEFORM (Audio Track) - Solid Dark Background: #201F1C */}
+          {/* TRACK 2: WAVEFORM (Audio Track) - Solid Dark Background: #211E1A */}
           <div 
-            style={{ height: `${waveformHeight}px`, backgroundColor: '#201F1C' }}
-            className="border-b border-broadcast-border relative cursor-pointer overflow-hidden transition-all duration-150 bg-[#201F1C]"
+            style={{ height: `${waveformHeight}px`, backgroundColor: '#211E1A' }}
+            className="border-b border-broadcast-border relative cursor-pointer overflow-hidden transition-all duration-150 bg-[#211E1A]"
             onPointerDown={handleTimelinePointerDown}
           >
             <canvas
               ref={waveformCanvasRef}
-              className="absolute inset-0 pointer-events-none"
-              style={{ width: `${totalWidth}px`, height: `${waveformHeight}px` }}
+              className="absolute top-0 pointer-events-none"
+              style={{
+                left: `${Math.max(0, scrollLeftState - 300)}px`,
+                height: `${waveformHeight}px`,
+                backgroundColor: '#211E1A'
+              }}
             />
 
             {/* Discrete Waveform Status */}
             <div className="absolute top-1 left-2 pointer-events-none z-10">
-              <span className="text-[9px] font-sans px-1.5 py-0.2 rounded bg-[#1A1917]/80 text-broadcast-textMuted flex items-center gap-1">
-                <Volume2 className="w-2.5 h-2.5 text-[#568F87]" />
+              <span className="text-[9px] font-sans px-1.5 py-0.2 rounded bg-[#1B1916]/85 text-broadcast-textMuted flex items-center gap-1 border border-broadcast-border/40">
+                <Volume2 className="w-2.5 h-2.5 text-[#B79D72]" />
                 {isExtractingWaveform ? (
                   <span>Decodificando audio...</span>
                 ) : waveformData?.isReal ? (
@@ -543,12 +592,12 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                   }}
                   className={`absolute rounded px-2 py-1 flex flex-col justify-between select-none cursor-pointer transition-colors overflow-hidden ${
                     seg.isSelected
-                      ? 'bg-broadcast-surfaceHover border border-broadcast-accent text-broadcast-textPrimary shadow-sm z-20'
+                      ? 'bg-[#2B2722] border-2 border-[#C8BDAA] text-[#E0D5C3] shadow-md z-20'
                       : seg.isCurrent
-                      ? 'bg-broadcast-surface border border-broadcast-accent/50 text-broadcast-textPrimary z-10'
+                      ? 'bg-[#2B2722]/90 border border-[#B79D72]/60 text-[#D8D1C5] z-10'
                       : seg.isOverlap
-                      ? 'bg-broadcast-panel border border-broadcast-danger text-broadcast-textSecondary'
-                      : 'bg-broadcast-panel border border-broadcast-border hover:bg-broadcast-surface hover:border-broadcast-borderLight text-broadcast-textSecondary'
+                      ? 'bg-[#24211D] border border-[#B96852] text-[#BEB6AA]'
+                      : 'bg-[#24211D] border border-[#3A352E] hover:bg-[#2B2722] hover:border-[#4B453D] text-[#BEB6AA]'
                   }`}
                   title={`#${seg.number}: ${seg.text} (${secondsToDisplayTime(seg.startSeconds)} - ${secondsToDisplayTime(seg.endSeconds)})`}
                 >
@@ -556,7 +605,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                   <div className="flex items-center justify-between gap-1 overflow-hidden leading-tight text-[10px]">
                     <span 
                       className="font-medium truncate"
-                      style={{ color: seg.speaker?.color || '#AAA49A' }}
+                      style={{ color: seg.speaker?.color || '#BEB6AA' }}
                     >
                       {seg.speaker?.displayName || 'Hablante'}
                     </span>
@@ -583,13 +632,13 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                     {seg.text}
                   </div>
 
-                  {/* Drag Handles on Selected Segment (Quiet, non-fluorescent) */}
+                  {/* Drag Handles on Selected Segment (Warm pearl focus, non-fluorescent) */}
                   {seg.isSelected && (
                     <>
                       {/* LEFT TRIM HANDLE (IN) */}
                       <div
                         onPointerDown={(e) => handleStartDrag(e, seg, 'in')}
-                        className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#568F87]/80 hover:bg-[#568F87] z-30 transition-colors"
+                        className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#C8BDAA]/80 hover:bg-[#E0D5C3] z-30 transition-colors"
                         title="Ajustar punto IN"
                       />
 
@@ -603,7 +652,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
                       {/* RIGHT TRIM HANDLE (OUT) */}
                       <div
                         onPointerDown={(e) => handleStartDrag(e, seg, 'out')}
-                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#568F87]/80 hover:bg-[#568F87] z-30 transition-colors"
+                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-[#C8BDAA]/80 hover:bg-[#E0D5C3] z-30 transition-colors"
                         title="Ajustar punto OUT"
                       />
                     </>
@@ -613,13 +662,13 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({ onSelectSegment })
             })}
           </div>
 
-          {/* UNIFIED VERTICAL PLAYHEAD (Discreet teal, no electric glow) */}
+          {/* UNIFIED VERTICAL PLAYHEAD (Pearl / Champagne #D6C7AE, no electric glow) */}
           <div
             style={{ left: `${playheadPositionX}px` }}
-            className="absolute top-0 bottom-0 w-px bg-[#568F87] z-30 pointer-events-none"
+            className="absolute top-0 bottom-0 w-px bg-[#D6C7AE] z-30 pointer-events-none"
           >
             {/* Scrubber top head */}
-            <div className="relative -left-1.5 top-0 w-3 h-2.5 bg-[#568F87] rounded-b-sm" />
+            <div className="relative -left-1.5 top-0 w-3 h-2.5 bg-[#D6C7AE] rounded-b-sm" />
           </div>
         </div>
       </div>

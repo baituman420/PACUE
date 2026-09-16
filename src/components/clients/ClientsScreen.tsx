@@ -55,7 +55,7 @@ export const ClientsScreen: React.FC = () => {
               <div className="space-y-2.5 text-xs font-mono py-3 border-t border-b border-broadcast-border/60">
                 <div className="flex items-center justify-between">
                   <span className="text-broadcast-textMuted">Servicio habitual:</span>
-                  <span className="text-cyan-300 font-semibold">{client.serviceDefault}</span>
+                  <span className="text-[#D8D1C5] font-semibold">{client.serviceDefault}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-broadcast-textMuted">Formato de salida:</span>

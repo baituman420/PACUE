@@ -318,16 +318,16 @@ export const SubtitleList: React.FC = () => {
           {/* Header of Inspector */}
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="font-mono font-bold text-teal-400 text-xs">
+              <span className="font-mono font-bold text-[#B79D72] text-xs">
                 BLOQUE #{selectedSegment.number}
               </span>
               <span className="text-broadcast-textMuted">•</span>
               <span
                 className="font-medium text-xs uppercase px-2 py-0.5 rounded"
                 style={{
-                  backgroundColor: speakers[selectedSegment.speakerId]?.color ? `${speakers[selectedSegment.speakerId].color}20` : '#14b8a620',
-                  color: speakers[selectedSegment.speakerId]?.color || '#14b8a6',
-                  border: `1px solid ${speakers[selectedSegment.speakerId]?.color || '#14b8a6'}40`
+                  backgroundColor: speakers[selectedSegment.speakerId]?.color ? `${speakers[selectedSegment.speakerId].color}20` : '#2B2722',
+                  color: speakers[selectedSegment.speakerId]?.color || '#BEB6AA',
+                  border: `1px solid ${speakers[selectedSegment.speakerId]?.color || '#3A352E'}50`
                 }}
               >
                 {speakers[selectedSegment.speakerId]?.displayName || selectedSegment.speakerId}
@@ -337,7 +337,7 @@ export const SubtitleList: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePlaySelectedSegment}
-                className="px-2 py-1 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover border border-broadcast-border text-teal-400 text-xs font-medium flex items-center gap-1 transition-colors"
+                className="px-2 py-1 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover border border-broadcast-border text-[#D8D1C5] text-xs font-medium flex items-center gap-1 transition-colors"
                 title="Reproducir este bloque desde su punto IN"
               >
                 <Play className="w-3 h-3 fill-current" />
@@ -351,7 +351,7 @@ export const SubtitleList: React.FC = () => {
             {/* IN POINT CONTROLS */}
             <div className="sm:col-span-4 bg-broadcast-panel p-2 rounded border border-broadcast-border space-y-1">
               <div className="flex items-center justify-between text-[10px] font-sans text-broadcast-textMuted">
-                <span className="text-teal-400 font-medium uppercase">PUNTO IN</span>
+                <span className="text-[#B79D72] font-medium uppercase">PUNTO IN</span>
                 <button
                   onClick={() => seekVideo(selectedSegment.startSeconds)}
                   className="hover:text-white underline text-[9px]"
@@ -373,7 +373,7 @@ export const SubtitleList: React.FC = () => {
                       (e.target as HTMLInputElement).blur();
                     }
                   }}
-                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-semibold text-white focus:border-teal-500 focus:outline-none"
+                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-semibold text-white focus:border-[#B79D72] focus:outline-none"
                   title="Edita el timecode IN y presiona Enter"
                 />
               </div>
@@ -382,7 +382,7 @@ export const SubtitleList: React.FC = () => {
               <div className="flex items-center justify-between gap-1 pt-0.5">
                 <button
                   onClick={() => setSegmentInPoint(selectedSegment.id)}
-                  className="flex-1 py-1 px-1.5 rounded bg-teal-950/70 hover:bg-teal-900/70 text-teal-300 border border-teal-700/40 font-mono text-[10px] font-semibold flex items-center justify-center gap-1 transition-colors"
+                  className="flex-1 py-1 px-1.5 rounded bg-[#2B2722] hover:bg-[#3A352E] text-[#D8D1C5] border border-[#3A352E] font-mono text-[10px] font-semibold flex items-center justify-center gap-1 transition-colors"
                   title="Establecer IN en la posición actual del vídeo (Atajo: Tecla I)"
                 >
                   <span>Fijar IN</span>
@@ -408,7 +408,7 @@ export const SubtitleList: React.FC = () => {
             {/* OUT POINT CONTROLS */}
             <div className="sm:col-span-4 bg-broadcast-panel p-2 rounded border border-broadcast-border space-y-1">
               <div className="flex items-center justify-between text-[10px] font-sans text-broadcast-textMuted">
-                <span className="text-teal-400 font-medium uppercase">PUNTO OUT</span>
+                <span className="text-[#B79D72] font-medium uppercase">PUNTO OUT</span>
                 <button
                   onClick={() => seekVideo(selectedSegment.endSeconds)}
                   className="hover:text-white underline text-[9px]"
@@ -430,7 +430,7 @@ export const SubtitleList: React.FC = () => {
                       (e.target as HTMLInputElement).blur();
                     }
                   }}
-                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-semibold text-white focus:border-teal-500 focus:outline-none"
+                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-semibold text-white focus:border-[#B79D72] focus:outline-none"
                   title="Edita el timecode OUT y presiona Enter"
                 />
               </div>
@@ -439,7 +439,7 @@ export const SubtitleList: React.FC = () => {
               <div className="flex items-center justify-between gap-1 pt-0.5">
                 <button
                   onClick={() => setSegmentOutPoint(selectedSegment.id)}
-                  className="flex-1 py-1 px-1.5 rounded bg-teal-950/70 hover:bg-teal-900/70 text-teal-300 border border-teal-700/40 font-mono text-[10px] font-semibold flex items-center justify-center gap-1 transition-colors"
+                  className="flex-1 py-1 px-1.5 rounded bg-[#2B2722] hover:bg-[#3A352E] text-[#D8D1C5] border border-[#3A352E] font-mono text-[10px] font-semibold flex items-center justify-center gap-1 transition-colors"
                   title="Establecer OUT en la posición actual del vídeo (Atajo: Tecla O)"
                 >
                   <span>Fijar OUT</span>
@@ -479,7 +479,7 @@ export const SubtitleList: React.FC = () => {
                   <span className={`font-bold ${
                     calculateCPS(selectedSegment.text, selectedSegment.endSeconds - selectedSegment.startSeconds) > qcProfile.maxCps
                       ? 'text-broadcast-amber'
-                      : 'text-emerald-400'
+                      : 'text-[#BEB6AA]'
                   }`}>
                     {calculateCPS(selectedSegment.text, selectedSegment.endSeconds - selectedSegment.startSeconds)} CPS
                   </span>
@@ -537,9 +537,9 @@ export const SubtitleList: React.FC = () => {
                 onClick={() => selectSegment(segment.id, true)}
                 className={`p-3 rounded border transition-all cursor-pointer ${
                   isSelected
-                    ? 'border-teal-500 bg-broadcast-surface shadow-sm'
+                    ? 'border-[#C8BDAA] bg-[#2B2722] shadow-sm'
                     : isPlaying
-                    ? 'border-teal-700/50 bg-teal-950/20'
+                    ? 'border-[#B79D72]/60 bg-[#24211D]'
                     : 'border-broadcast-border bg-broadcast-darkest/70 hover:border-broadcast-borderLight'
                 }`}
               >
@@ -557,7 +557,7 @@ export const SubtitleList: React.FC = () => {
                         seekVideo(segment.startSeconds);
                         selectSegment(segment.id, false);
                       }}
-                      className="font-mono text-teal-400 hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
+                      className="font-mono text-[#D8D1C5] hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
                       title="Haz clic para saltar al timecode IN en el vídeo"
                     >
                       {segment.startTime}
@@ -570,7 +570,7 @@ export const SubtitleList: React.FC = () => {
                         selectSegment(segment.id, false);
                         setSegmentInPoint(segment.id);
                       }}
-                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-teal-900/40 text-broadcast-textMuted hover:text-teal-300 border border-broadcast-border"
+                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-[#2B2722] text-broadcast-textMuted hover:text-[#D8D1C5] border border-broadcast-border"
                       title="Fijar IN a la posición actual del vídeo (Atajo: I)"
                     >
                       I
@@ -585,7 +585,7 @@ export const SubtitleList: React.FC = () => {
                         seekVideo(segment.endSeconds);
                         selectSegment(segment.id, false);
                       }}
-                      className="font-mono text-teal-400 hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
+                      className="font-mono text-[#D8D1C5] hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
                       title="Haz clic para saltar al timecode OUT en el vídeo"
                     >
                       {segment.endTime}
@@ -598,7 +598,7 @@ export const SubtitleList: React.FC = () => {
                         selectSegment(segment.id, false);
                         setSegmentOutPoint(segment.id);
                       }}
-                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-teal-900/40 text-broadcast-textMuted hover:text-teal-300 border border-broadcast-border"
+                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-[#2B2722] text-broadcast-textMuted hover:text-[#D8D1C5] border border-broadcast-border"
                       title="Fijar OUT a la posición actual del vídeo (Atajo: O)"
                     >
                       O
@@ -618,9 +618,9 @@ export const SubtitleList: React.FC = () => {
                       }}
                       className="px-2 py-0.5 rounded text-[11px] font-bold tracking-wide uppercase transition-transform hover:scale-105"
                       style={{
-                        backgroundColor: speaker?.color ? `${speaker.color}25` : '#38bdf825',
-                        color: speaker?.color || '#38bdf8',
-                        border: `1px solid ${speaker?.color || '#38bdf8'}50`
+                        backgroundColor: speaker?.color ? `${speaker.color}25` : '#2B2722',
+                        color: speaker?.color || '#D8D1C5',
+                        border: `1px solid ${speaker?.color || '#3A352E'}50`
                       }}
                       title="Haz clic para gestionar este personaje"
                     >
