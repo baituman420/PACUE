@@ -8,7 +8,7 @@ import {
   MOCK_HISTORY, DEFAULT_QC_PROFILE_RTVE 
 } from '../data/mockData';
 import { evaluateQC } from '../services/qcService';
-import { parseSRT } from '../services/srtService';
+import { parseSRT, secondsToDisplayTime, parseAnyTimecodeToSeconds } from '../services/srtService';
 
 interface AppContextType {
   // Navigation & Jobs
@@ -37,6 +37,10 @@ interface AppContextType {
   // Actions on Subtitles & Speakers
   updateSegmentText: (segmentId: string, newText: string) => void;
   updateSegmentSpeaker: (segmentId: string, speakerId: string) => void;
+  updateSegmentTimecodes: (segmentId: string, startSeconds: number, endSeconds: number) => void;
+  setSegmentInPoint: (segmentId: string, inSeconds?: number) => void;
+  setSegmentOutPoint: (segmentId: string, outSeconds?: number) => void;
+  nudgeSegmentTimecode: (segmentId: string, edge: 'in' | 'out' | 'both', deltaSeconds: number) => void;
   renameSpeaker: (speakerId: string, newName: string, confirmed?: boolean) => void;
   viewSpeakerInterventions: (speakerId: string) => void;
   selectSegment: (segmentId: string | null, jumpVideo?: boolean) => void;
@@ -216,6 +220,95 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSegments(prev => prev.map(s => {
       if (s.id === segmentId) {
         return { ...s, speakerId };
+      }
+      return s;
+    }));
+  }, []);
+
+  // Update segment timecodes directly (start and end)
+  const updateSegmentTimecodes = useCallback((segmentId: string, startSeconds: number, endSeconds: number) => {
+    const validStart = Math.max(0, startSeconds);
+    const validEnd = Math.max(validStart + 0.04, endSeconds); // at least 1 frame (40ms)
+    setSegments(prev => prev.map(s => {
+      if (s.id === segmentId) {
+        return {
+          ...s,
+          startSeconds: Number(validStart.toFixed(3)),
+          endSeconds: Number(validEnd.toFixed(3)),
+          startTime: secondsToDisplayTime(validStart),
+          endTime: secondsToDisplayTime(validEnd),
+          status: 'edited'
+        };
+      }
+      return s;
+    }));
+  }, []);
+
+  // Set IN point of segment from current playhead (Shortcut I)
+  const setSegmentInPoint = useCallback((segmentId: string, inSeconds?: number) => {
+    setSegments(prev => prev.map(s => {
+      if (s.id === segmentId) {
+        const targetIn = inSeconds !== undefined ? inSeconds : currentTime;
+        const newStart = Math.max(0, targetIn);
+        // If new start >= end, automatically extend end to keep at least 1 second or 0.8s
+        const newEnd = newStart >= s.endSeconds ? newStart + 1.0 : s.endSeconds;
+        return {
+          ...s,
+          startSeconds: Number(newStart.toFixed(3)),
+          endSeconds: Number(newEnd.toFixed(3)),
+          startTime: secondsToDisplayTime(newStart),
+          endTime: secondsToDisplayTime(newEnd),
+          status: 'edited'
+        };
+      }
+      return s;
+    }));
+  }, [currentTime]);
+
+  // Set OUT point of segment from current playhead (Shortcut O)
+  const setSegmentOutPoint = useCallback((segmentId: string, outSeconds?: number) => {
+    setSegments(prev => prev.map(s => {
+      if (s.id === segmentId) {
+        const targetOut = outSeconds !== undefined ? outSeconds : currentTime;
+        const newEnd = Math.max(0.04, targetOut);
+        // If new end <= start, pull start back to maintain interval
+        const newStart = newEnd <= s.startSeconds ? Math.max(0, newEnd - 1.0) : s.startSeconds;
+        return {
+          ...s,
+          startSeconds: Number(newStart.toFixed(3)),
+          endSeconds: Number(newEnd.toFixed(3)),
+          startTime: secondsToDisplayTime(newStart),
+          endTime: secondsToDisplayTime(newEnd),
+          status: 'edited'
+        };
+      }
+      return s;
+    }));
+  }, [currentTime]);
+
+  // Nudge timecode by delta (+/- 1 frame = 40ms, etc.)
+  const nudgeSegmentTimecode = useCallback((segmentId: string, edge: 'in' | 'out' | 'both', deltaSeconds: number) => {
+    setSegments(prev => prev.map(s => {
+      if (s.id === segmentId) {
+        let newStart = s.startSeconds;
+        let newEnd = s.endSeconds;
+        if (edge === 'in' || edge === 'both') {
+          newStart = Math.max(0, newStart + deltaSeconds);
+        }
+        if (edge === 'out' || edge === 'both') {
+          newEnd = Math.max(newStart + 0.04, newEnd + deltaSeconds);
+        }
+        if (newEnd <= newStart) {
+          newEnd = newStart + 0.04;
+        }
+        return {
+          ...s,
+          startSeconds: Number(newStart.toFixed(3)),
+          endSeconds: Number(newEnd.toFixed(3)),
+          startTime: secondsToDisplayTime(newStart),
+          endTime: secondsToDisplayTime(newEnd),
+          status: 'edited'
+        };
       }
       return s;
     }));
@@ -426,6 +519,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSearchQuery,
         updateSegmentText,
         updateSegmentSpeaker,
+        updateSegmentTimecodes,
+        setSegmentInPoint,
+        setSegmentOutPoint,
+        nudgeSegmentTimecode,
         renameSpeaker,
         viewSpeakerInterventions,
         selectSegment,

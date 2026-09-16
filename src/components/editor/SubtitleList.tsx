@@ -1,11 +1,13 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { 
   Users, Upload, Search, ChevronUp, ChevronDown, AlertTriangle, 
-  CheckCircle2, Clock, Filter, Check, ArrowRight
+  CheckCircle2, Clock, Filter, Check, ArrowRight, Play, FastForward,
+  Rewind, CornerDownLeft, SlidersHorizontal, Sparkles
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SubtitleSegment, QCFilterKey } from '../../types';
 import { filterSegmentsByQC, calculateCPS } from '../../services/qcService';
+import { parseAnyTimecodeToSeconds, secondsToDisplayTime, secondsToSMPTE } from '../../services/srtService';
 import { SpeakerDrawer } from '../speakers/SpeakerDrawer';
 import { ImportModal } from './ImportModal';
 
@@ -14,8 +16,13 @@ export const SubtitleList: React.FC = () => {
     segments,
     speakers,
     selectedSegmentId,
+    selectedSegment,
     selectSegment,
     updateSegmentText,
+    updateSegmentTimecodes,
+    setSegmentInPoint,
+    setSegmentOutPoint,
+    nudgeSegmentTimecode,
     activeQCFilter,
     setActiveQCFilter,
     selectedSpeakerFilter,
@@ -27,14 +34,32 @@ export const SubtitleList: React.FC = () => {
     jumpToNextSegment,
     currentTime,
     qcProfile,
-    togglePlayPause
+    togglePlayPause,
+    seekVideo,
+    setIsPlaying,
+    activeJob
   } = useApp();
 
   const [isSpeakerDrawerOpen, setIsSpeakerDrawerOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
+  // Local state for timecode editing inside the inspector
+  const [inspectorInText, setInspectorInText] = useState('');
+  const [inspectorOutText, setInspectorOutText] = useState('');
+
   const activeRowRef = useRef<HTMLDivElement>(null);
   const listContainerRef = useRef<HTMLDivElement>(null);
+
+  const fps = activeJob?.fps || 25;
+  const frameDuration = 1 / fps; // 0.040s at 25 fps
+
+  // Keep inspector inputs in sync with selected segment
+  useEffect(() => {
+    if (selectedSegment) {
+      setInspectorInText(selectedSegment.startTime);
+      setInspectorOutText(selectedSegment.endTime);
+    }
+  }, [selectedSegment?.id, selectedSegment?.startTime, selectedSegment?.endTime]);
 
   // Filter segments based on QC tab, Speaker filter, and Search Query
   const displayedSegments = useMemo(() => {
@@ -73,7 +98,13 @@ export const SubtitleList: React.FC = () => {
     }
   }, [selectedSegmentId, playingSegmentId]);
 
-  // Global keyboard shortcuts for editing workflow
+  // Global professional keyboard shortcuts for editing workflow
+  // Shortcuts:
+  // - I / i: set IN point of selected segment to currentTime
+  // - O / o: set OUT point of selected segment to currentTime
+  // - Space: Play/Pause
+  // - ArrowUp / ArrowDown: Prev/Next segment
+  // - Ctrl/Cmd + Enter: Confirm/Save current edit field
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -88,28 +119,78 @@ export const SubtitleList: React.FC = () => {
         return;
       }
 
-      // Space: Play/Pause only when not typing inside an input/textarea
-      if (e.code === 'Space' && !isInputFocused) {
+      // If user is typing inside an input/textarea, DO NOT intercept normal typing keys!
+      if (isInputFocused) {
+        return;
+      }
+
+      // Space: Play/Pause
+      if (e.code === 'Space') {
         e.preventDefault();
         togglePlayPause();
         return;
       }
 
-      // Arrow Up / Down: Move between segments when not actively typing text
-      if (!isInputFocused) {
-        if (e.key === 'ArrowUp') {
+      // 'I' or 'i': Set IN point of selected segment to current video playhead
+      if ((e.key === 'i' || e.key === 'I') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (selectedSegmentId) {
           e.preventDefault();
-          jumpToPrevSegment();
-        } else if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          jumpToNextSegment();
+          setSegmentInPoint(selectedSegmentId);
         }
+        return;
+      }
+
+      // 'O' or 'o': Set OUT point of selected segment to current video playhead
+      if ((e.key === 'o' || e.key === 'O') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (selectedSegmentId) {
+          e.preventDefault();
+          setSegmentOutPoint(selectedSegmentId);
+        }
+        return;
+      }
+
+      // Arrow Up / Down: Move between segments
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        jumpToPrevSegment();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        jumpToNextSegment();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, jumpToPrevSegment, jumpToNextSegment]);
+  }, [togglePlayPause, jumpToPrevSegment, jumpToNextSegment, selectedSegmentId, setSegmentInPoint, setSegmentOutPoint]);
+
+  // Handle manual submit of Inspector IN timecode
+  const handleInspectorInSubmit = () => {
+    if (!selectedSegment) return;
+    const parsed = parseAnyTimecodeToSeconds(inspectorInText, fps);
+    if (!isNaN(parsed) && parsed >= 0) {
+      updateSegmentTimecodes(selectedSegment.id, parsed, selectedSegment.endSeconds);
+    } else {
+      setInspectorInText(selectedSegment.startTime);
+    }
+  };
+
+  // Handle manual submit of Inspector OUT timecode
+  const handleInspectorOutSubmit = () => {
+    if (!selectedSegment) return;
+    const parsed = parseAnyTimecodeToSeconds(inspectorOutText, fps);
+    if (!isNaN(parsed) && parsed > selectedSegment.startSeconds) {
+      updateSegmentTimecodes(selectedSegment.id, selectedSegment.startSeconds, parsed);
+    } else {
+      setInspectorOutText(selectedSegment.endTime);
+    }
+  };
+
+  // Play whole selected segment (seeks to start and starts playback)
+  const handlePlaySelectedSegment = () => {
+    if (!selectedSegment) return;
+    seekVideo(selectedSegment.startSeconds);
+    setIsPlaying(true);
+  };
 
   const qcFilterKeys: QCFilterKey[] = [
     'TODOS',
@@ -230,6 +311,209 @@ export const SubtitleList: React.FC = () => {
         )}
       </div>
 
+      {/* PRO TIMECODE INSPECTOR BAR FOR SELECTED SEGMENT */}
+      {selectedSegment && (
+        <div className="bg-broadcast-darkest border-b border-broadcast-accent/50 p-2.5 space-y-2 shadow-xl relative overflow-hidden">
+          {/* Subtle cyan accent glow border top */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-broadcast-accent to-transparent" />
+
+          {/* Header of Inspector */}
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-mono font-bold text-broadcast-accent text-xs">
+                BLOQUE #{selectedSegment.number}
+              </span>
+              <span className="text-broadcast-textMuted">•</span>
+              <span
+                className="font-bold text-xs uppercase px-2 py-0.5 rounded font-mono"
+                style={{
+                  backgroundColor: speakers[selectedSegment.speakerId]?.color ? `${speakers[selectedSegment.speakerId].color}25` : '#38bdf825',
+                  color: speakers[selectedSegment.speakerId]?.color || '#38bdf8',
+                  border: `1px solid ${speakers[selectedSegment.speakerId]?.color || '#38bdf8'}50`
+                }}
+              >
+                {speakers[selectedSegment.speakerId]?.displayName || selectedSegment.speakerId}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePlaySelectedSegment}
+                className="px-2 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border border border-broadcast-border text-broadcast-accent text-xs font-semibold flex items-center gap-1 transition-colors"
+                title="Reproducir este bloque desde su punto IN"
+              >
+                <Play className="w-3 h-3 fill-current" />
+                <span>Play Bloque</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Timecode IN / OUT / Duration Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs">
+            {/* IN POINT CONTROLS */}
+            <div className="sm:col-span-4 bg-broadcast-panel p-2 rounded border border-broadcast-border space-y-1">
+              <div className="flex items-center justify-between text-[10px] font-mono text-broadcast-textMuted">
+                <span className="text-cyan-400 font-bold uppercase">PUNTO IN</span>
+                <button
+                  onClick={() => seekVideo(selectedSegment.startSeconds)}
+                  className="hover:text-white underline text-[9px]"
+                  title="Ir al timecode IN en el vídeo"
+                >
+                  Ir a IN
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={inspectorInText}
+                  onChange={(e) => setInspectorInText(e.target.value)}
+                  onBlur={handleInspectorInSubmit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleInspectorInSubmit();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
+                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-bold text-white focus:border-broadcast-accent focus:outline-none"
+                  title="Edita el timecode IN y presiona Enter"
+                />
+              </div>
+
+              {/* Fast Steppers & Playhead IN Setter */}
+              <div className="flex items-center justify-between gap-1 pt-0.5">
+                <button
+                  onClick={() => setSegmentInPoint(selectedSegment.id)}
+                  className="flex-1 py-1 px-1.5 rounded bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-700/50 font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
+                  title="Establecer IN en la posición actual del vídeo (Atajo: Tecla I)"
+                >
+                  <span>Fijar IN</span>
+                  <span className="px-1 py-0.2 bg-black/40 rounded text-[9px] text-white">[I]</span>
+                </button>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'in', -frameDuration)}
+                  className="px-1.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white font-mono text-[10px]"
+                  title="-1 cuadro (-40ms)"
+                >
+                  -1f
+                </button>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'in', frameDuration)}
+                  className="px-1.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white font-mono text-[10px]"
+                  title="+1 cuadro (+40ms)"
+                >
+                  +1f
+                </button>
+              </div>
+            </div>
+
+            {/* OUT POINT CONTROLS */}
+            <div className="sm:col-span-4 bg-broadcast-panel p-2 rounded border border-broadcast-border space-y-1">
+              <div className="flex items-center justify-between text-[10px] font-mono text-broadcast-textMuted">
+                <span className="text-cyan-400 font-bold uppercase">PUNTO OUT</span>
+                <button
+                  onClick={() => seekVideo(selectedSegment.endSeconds)}
+                  className="hover:text-white underline text-[9px]"
+                  title="Ir al timecode OUT en el vídeo"
+                >
+                  Ir a OUT
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={inspectorOutText}
+                  onChange={(e) => setInspectorOutText(e.target.value)}
+                  onBlur={handleInspectorOutSubmit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleInspectorOutSubmit();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
+                  className="w-full px-2 py-1 bg-broadcast-darkest rounded border border-broadcast-border font-mono text-xs font-bold text-white focus:border-broadcast-accent focus:outline-none"
+                  title="Edita el timecode OUT y presiona Enter"
+                />
+              </div>
+
+              {/* Fast Steppers & Playhead OUT Setter */}
+              <div className="flex items-center justify-between gap-1 pt-0.5">
+                <button
+                  onClick={() => setSegmentOutPoint(selectedSegment.id)}
+                  className="flex-1 py-1 px-1.5 rounded bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-700/50 font-mono text-[10px] font-bold flex items-center justify-center gap-1 transition-colors"
+                  title="Establecer OUT en la posición actual del vídeo (Atajo: Tecla O)"
+                >
+                  <span>Fijar OUT</span>
+                  <span className="px-1 py-0.2 bg-black/40 rounded text-[9px] text-white">[O]</span>
+                </button>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'out', -frameDuration)}
+                  className="px-1.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white font-mono text-[10px]"
+                  title="-1 cuadro (-40ms)"
+                >
+                  -1f
+                </button>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'out', frameDuration)}
+                  className="px-1.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white font-mono text-[10px]"
+                  title="+1 cuadro (+40ms)"
+                >
+                  +1f
+                </button>
+              </div>
+            </div>
+
+            {/* DURATION & REAL-TIME RECALCULATED METRICS */}
+            <div className="sm:col-span-4 bg-broadcast-panel p-2 rounded border border-broadcast-border flex flex-col justify-between h-full">
+              <div className="text-[10px] font-mono text-broadcast-textMuted uppercase flex items-center justify-between">
+                <span>DURACIÓN</span>
+                <span className="text-white font-mono">
+                  {Math.round((selectedSegment.endSeconds - selectedSegment.startSeconds) * fps)}f
+                </span>
+              </div>
+
+              <div className="my-0.5">
+                <div className="text-base font-mono font-bold text-broadcast-accent leading-none">
+                  {(selectedSegment.endSeconds - selectedSegment.startSeconds).toFixed(3)}s
+                </div>
+                <div className="flex items-center gap-2 mt-1 text-[10px] font-mono">
+                  <span className={`font-bold ${
+                    calculateCPS(selectedSegment.text, selectedSegment.endSeconds - selectedSegment.startSeconds) > qcProfile.maxCps
+                      ? 'text-broadcast-amber'
+                      : 'text-emerald-400'
+                  }`}>
+                    {calculateCPS(selectedSegment.text, selectedSegment.endSeconds - selectedSegment.startSeconds)} CPS
+                  </span>
+                  <span className="text-broadcast-textMuted">
+                    • {selectedSegment.text.replace(/\n/g, ' ').length} car
+                  </span>
+                </div>
+              </div>
+
+              {/* Slip Whole Block */}
+              <div className="flex items-center justify-between gap-1 pt-1 border-t border-broadcast-border/50 text-[10px] font-mono">
+                <span className="text-broadcast-textMuted">Slip:</span>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'both', -0.1)}
+                  className="px-1.5 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white"
+                  title="Desplazar bloque completo -100ms"
+                >
+                  -100ms
+                </button>
+                <button
+                  onClick={() => nudgeSegmentTimecode(selectedSegment.id, 'both', 0.1)}
+                  className="px-1.5 py-0.5 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textMuted hover:text-white"
+                  title="Desplazar bloque completo +100ms"
+                >
+                  +100ms
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Subtitle Blocks Vertical List */}
       <div 
         ref={listContainerRef}
@@ -247,7 +531,6 @@ export const SubtitleList: React.FC = () => {
             const duration = Math.max(0.01, segment.endSeconds - segment.startSeconds);
             const cps = calculateCPS(segment.text, duration);
             const isHighCps = cps > qcProfile.maxCps;
-            const isUnidentifiedSpeaker = !speaker || !speaker.confirmed || speaker.displayName.toLowerCase().startsWith('speaker');
 
             return (
               <div
@@ -264,18 +547,66 @@ export const SubtitleList: React.FC = () => {
               >
                 {/* Header of Block: #Number, Timecode in/out, Duration, Speaker */}
                 <div className="flex items-center justify-between gap-2 mb-1.5 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-broadcast-textMuted text-[11px]">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-mono font-bold text-broadcast-textMuted text-[11px] mr-1">
                       #{segment.number}
                     </span>
-                    <span className="font-mono text-cyan-400 font-semibold text-[11px]">
+
+                    {/* Inline IN timecode button/indicator */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        seekVideo(segment.startSeconds);
+                        selectSegment(segment.id, false);
+                      }}
+                      className="font-mono text-cyan-400 hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
+                      title="Haz clic para saltar al timecode IN en el vídeo"
+                    >
                       {segment.startTime}
-                    </span>
+                    </button>
+
+                    {/* Fast IN setter [I] */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectSegment(segment.id, false);
+                        setSegmentInPoint(segment.id);
+                      }}
+                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-cyan-900/40 text-broadcast-textMuted hover:text-cyan-300 border border-broadcast-border"
+                      title="Fijar IN a la posición actual del vídeo (Atajo: I)"
+                    >
+                      I
+                    </button>
+
                     <span className="text-broadcast-textMuted text-[10px]">→</span>
-                    <span className="font-mono text-cyan-400 font-semibold text-[11px]">
+
+                    {/* Inline OUT timecode button/indicator */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        seekVideo(segment.endSeconds);
+                        selectSegment(segment.id, false);
+                      }}
+                      className="font-mono text-cyan-400 hover:text-white font-semibold text-[11px] px-1 py-0.2 rounded hover:bg-broadcast-surface transition-colors"
+                      title="Haz clic para saltar al timecode OUT en el vídeo"
+                    >
                       {segment.endTime}
-                    </span>
-                    <span className="text-[10px] font-mono text-broadcast-textMuted">
+                    </button>
+
+                    {/* Fast OUT setter [O] */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectSegment(segment.id, false);
+                        setSegmentOutPoint(segment.id);
+                      }}
+                      className="text-[9px] font-mono px-1 py-0.2 rounded bg-broadcast-surface hover:bg-cyan-900/40 text-broadcast-textMuted hover:text-cyan-300 border border-broadcast-border"
+                      title="Fijar OUT a la posición actual del vídeo (Atajo: O)"
+                    >
+                      O
+                    </button>
+
+                    <span className="text-[10px] font-mono text-broadcast-textMuted ml-1">
                       ({duration.toFixed(2)}s)
                     </span>
                   </div>
@@ -361,10 +692,10 @@ export const SubtitleList: React.FC = () => {
         <div className="flex items-center gap-3">
           <span>Mostrando: <strong className="text-white">{displayedSegments.length}</strong> / {segments.length} bloques</span>
           <span>•</span>
-          <span>Atajos: [Espacio] Play/Pausa • [↑/↓] Navegar • [Ctrl+Enter] Guardar</span>
+          <span className="text-broadcast-accent font-semibold">Atajos: [I] Fijar IN • [O] Fijar OUT • [Espacio] Play/Pausa • [↑/↓] Bloque</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-broadcast-accent">PACUE Editor Core</span>
+          <span className="text-broadcast-accent">PACUE Precision Editor</span>
         </div>
       </div>
 

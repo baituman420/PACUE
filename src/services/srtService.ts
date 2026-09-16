@@ -40,13 +40,45 @@ export function secondsToSMPTE(seconds: number, fps = 25): string {
  * Parses SRT timecode '00:14:23,120' or '00:14:23.120' to float seconds
  */
 export function parseSrtTimeToSeconds(timeStr: string): number {
+  return parseAnyTimecodeToSeconds(timeStr, 25);
+}
+
+/**
+ * Robust parser supporting HH:MM:SS.mmm, HH:MM:SS:FF (frames), MM:SS.mmm or raw seconds
+ */
+export function parseAnyTimecodeToSeconds(timeStr: string, fps = 25): number {
+  if (!timeStr) return 0;
   const clean = timeStr.trim().replace(',', '.');
+  
+  // Case 1: HH:MM:SS:FF (SMPTE with colon for frames)
+  const smpteMatch = clean.match(/^(\d{1,2}):(\d{2}):(\d{2}):(\d{1,2})$/);
+  if (smpteMatch) {
+    const h = parseInt(smpteMatch[1], 10);
+    const m = parseInt(smpteMatch[2], 10);
+    const s = parseInt(smpteMatch[3], 10);
+    const frames = parseInt(smpteMatch[4], 10);
+    return h * 3600 + m * 60 + s + (frames / fps);
+  }
+
+  // Case 2: HH:MM:SS.mmm
   const parts = clean.split(':');
   if (parts.length === 3) {
     const h = parseFloat(parts[0]);
     const m = parseFloat(parts[1]);
     const s = parseFloat(parts[2]);
-    return h * 3600 + m * 60 + s;
+    if (!isNaN(h) && !isNaN(m) && !isNaN(s)) {
+      return h * 3600 + m * 60 + s;
+    }
+  } else if (parts.length === 2) {
+    // MM:SS.mmm
+    const m = parseFloat(parts[0]);
+    const s = parseFloat(parts[1]);
+    if (!isNaN(m) && !isNaN(s)) {
+      return m * 60 + s;
+    }
+  } else if (parts.length === 1) {
+    const s = parseFloat(parts[0]);
+    if (!isNaN(s)) return s;
   }
   return 0;
 }

@@ -241,6 +241,36 @@ export const VideoMonitor: React.FC = () => {
       ctx.fillRect(barX, barY, 1.8, amp);
     }
 
+    // If a segment is selected, render broadcast IN and OUT bracket handles
+    if (selectedSegment) {
+      const inX = (selectedSegment.startSeconds / duration) * w;
+      const outX = (selectedSegment.endSeconds / duration) * w;
+
+      // Glow fill between IN and OUT
+      ctx.fillStyle = 'rgba(0, 229, 255, 0.22)';
+      ctx.fillRect(inX, 0, Math.max(2, outX - inX), h);
+
+      // Bracket [ for IN
+      ctx.fillStyle = '#00e5ff';
+      ctx.fillRect(inX - 1, 0, 2, h);
+      ctx.fillRect(inX - 1, 0, 5, 2);
+      ctx.fillRect(inX - 1, h - 2, 5, 2);
+
+      // Bracket ] for OUT
+      ctx.fillStyle = '#00e5ff';
+      ctx.fillRect(outX - 1, 0, 2, h);
+      ctx.fillRect(outX - 5, 0, 5, 2);
+      ctx.fillRect(outX - 5, h - 2, 5, 2);
+
+      // Mini text tag "IN" and "OUT" if there is enough space
+      if (outX - inX > 28) {
+        ctx.font = 'bold 8px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillText('IN', inX + 3, 10);
+        ctx.fillText('OUT', outX - 18, 10);
+      }
+    }
+
     // Current playhead cursor
     const cursorX = (currentTime / duration) * w;
     ctx.fillStyle = '#00e5ff';
