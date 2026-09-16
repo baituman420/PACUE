@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Film, AlignLeft, SplitSquareVertical, Users, AlertTriangle, 
-  Sparkles, CheckCircle2 
+  Sparkles, CheckCircle2, BookOpen 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { VideoMonitor } from './VideoMonitor';
@@ -9,13 +9,17 @@ import { TimelineTrack } from './TimelineTrack';
 import { SegmentInspector } from './SegmentInspector';
 import { SubtitleList } from './SubtitleList';
 import { SpeakerDrawer } from '../speakers/SpeakerDrawer';
+import { RulesDrawer } from '../rules/RulesDrawer';
 
 export const EditorScreen: React.FC = () => {
   const { 
     selectedSegment, 
     speakers, 
     qcCounts, 
-    selectedSegmentId 
+    selectedSegmentId,
+    isRulesDrawerOpen,
+    setIsRulesDrawerOpen,
+    activeRuleIdToHighlight
   } = useApp();
 
   // Mode: 'timeline' (Timeline-first, default) | 'texto' (Vertical list) | 'split' (Combined)
@@ -104,6 +108,16 @@ export const EditorScreen: React.FC = () => {
             <Users className="w-3.5 h-3.5" />
             <span>PERSONAJES</span>
           </button>
+
+          {/* Work Rules button */}
+          <button
+            onClick={() => setIsRulesDrawerOpen(true)}
+            className="px-2.5 py-1 rounded bg-broadcast-surface hover:bg-cyan-950/40 border border-cyan-500/30 text-xs font-semibold text-cyan-300 hover:text-cyan-200 flex items-center gap-1.5 transition-all shadow-sm"
+            title="Consultar manual de estilo y reglas de subtitulado (UNE 153010, Cliente, Proyecto)"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="tracking-wide">REGLAS</span>
+          </button>
         </div>
       </div>
 
@@ -163,6 +177,13 @@ export const EditorScreen: React.FC = () => {
       <SpeakerDrawer
         isOpen={isSpeakerDrawerOpen}
         onClose={() => setIsSpeakerDrawerOpen(false)}
+      />
+
+      {/* Rules Drawer Modal */}
+      <RulesDrawer
+        isOpen={isRulesDrawerOpen}
+        onClose={() => setIsRulesDrawerOpen(false)}
+        highlightRuleId={activeRuleIdToHighlight}
       />
     </div>
   );

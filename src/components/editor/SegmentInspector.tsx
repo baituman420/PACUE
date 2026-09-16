@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Play, Users, AlertTriangle, Check, ArrowRight, CornerDownLeft, 
-  RotateCcw, SlidersHorizontal, Sparkles, ChevronRight, ChevronLeft 
+  RotateCcw, SlidersHorizontal, Sparkles, ChevronRight, ChevronLeft,
+  BookOpen 
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { parseAnyTimecodeToSeconds } from '../../services/srtService';
@@ -25,7 +26,8 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
     seekVideo,
     setIsPlaying,
     qcProfile,
-    activeJob
+    activeJob,
+    openRule
   } = useApp();
 
   const [inInput, setInInput] = useState('');
@@ -293,14 +295,24 @@ export const SegmentInspector: React.FC<SegmentInspectorProps> = ({ onOpenSpeake
 
       {/* Detailed QC Warnings Breakdown (Explaining cleanly) */}
       {selectedSegment.warnings && selectedSegment.warnings.length > 0 && (
-        <div className="p-3 rounded bg-amber-950/30 border border-amber-800/40 space-y-1.5">
+        <div className="p-3 rounded bg-amber-950/30 border border-amber-800/40 space-y-2">
           <div className="text-[10px] font-mono font-bold text-broadcast-amber uppercase flex items-center gap-1">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Incidencias QC Detectadas:</span>
           </div>
           {selectedSegment.warnings.map((w, idx) => (
-            <div key={idx} className="text-xs text-amber-200/90 leading-tight">
-              • {w.message}
+            <div key={idx} className="flex items-center justify-between gap-2 text-xs text-amber-200/90 leading-tight pt-1 border-t border-amber-800/30 first:border-0 first:pt-0">
+              <span>• {w.message}</span>
+              {w.ruleId && (
+                <button
+                  onClick={() => openRule(w.ruleId!)}
+                  className="px-2 py-0.5 rounded bg-amber-900/60 hover:bg-amber-800 text-amber-300 font-mono text-[10px] font-bold whitespace-nowrap flex items-center gap-1 transition-colors"
+                  title="Consultar la norma audiovisual que aplica a esta advertencia"
+                >
+                  <BookOpen className="w-3 h-3" />
+                  <span>VER REGLA</span>
+                </button>
+              )}
             </div>
           ))}
         </div>

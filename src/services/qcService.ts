@@ -44,6 +44,7 @@ export function evaluateQC(
         message: 'Speaker sin identificar',
         severity: 'warning',
         value: speaker ? speaker.displayName : segment.speakerId,
+        ruleId: 'rule_speaker_id_rtve',
       });
     }
 
@@ -54,6 +55,7 @@ export function evaluateQC(
         message: `${cps} CPS (límite ${profile.maxCps})`,
         severity: 'warning',
         value: cps,
+        ruleId: profile.id.includes('rtve') ? 'rule_speed_cps_rtve' : 'rule_speed_cps_amazon',
       });
     }
 
@@ -64,6 +66,7 @@ export function evaluateQC(
         message: `Duración breve (${Math.round(durationMs)}ms < ${profile.minDurationMs}ms)`,
         severity: 'warning',
         value: Math.round(durationMs),
+        ruleId: 'rule_duration_bounds',
       });
     } else if (durationMs > profile.maxDurationMs) {
       warnings.push({
@@ -71,6 +74,7 @@ export function evaluateQC(
         message: `Duración excesiva (${(durationMs / 1000).toFixed(1)}s > ${profile.maxDurationMs / 1000}s)`,
         severity: 'warning',
         value: Math.round(durationMs),
+        ruleId: 'rule_duration_bounds',
       });
     }
 
@@ -85,6 +89,7 @@ export function evaluateQC(
           message: `Solapamiento con #${prev.number} (${overlapMs}ms)`,
           severity: 'error',
           value: overlapMs,
+          ruleId: 'rule_overlap_sync',
         });
       }
     }
@@ -99,6 +104,7 @@ export function evaluateQC(
         message: `${lines.length} líneas (máximo ${profile.maxLines})`,
         severity: 'warning',
         value: lines.length,
+        ruleId: 'rule_max_chars_rtve',
       });
     }
     for (let i = 0; i < lines.length; i++) {
@@ -109,6 +115,7 @@ export function evaluateQC(
           message: `Línea ${i + 1} excede ${profile.maxCharactersPerLine} caracteres (${lines[i].length})`,
           severity: 'warning',
           value: lines[i].length,
+          ruleId: 'rule_max_chars_rtve',
         });
       }
     }

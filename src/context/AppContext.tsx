@@ -75,6 +75,12 @@ interface AppContextType {
   history: DeliveryRecord[];
   clients: Record<string, ClientProfile>;
 
+  // Rules Drawer
+  isRulesDrawerOpen: boolean;
+  setIsRulesDrawerOpen: (open: boolean) => void;
+  activeRuleIdToHighlight: string | null;
+  openRule: (ruleId: string) => void;
+
   // User & Reset
   user: { name: string; role: string; initials: string };
   resetAllDemoData: () => void;
@@ -151,6 +157,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [duration, setDuration] = useState(2536); // ~42m
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
+
+  // Rules Drawer State
+  const [isRulesDrawerOpen, setIsRulesDrawerOpen] = useState(false);
+  const [activeRuleIdToHighlight, setActiveRuleIdToHighlight] = useState<string | null>(null);
+
+  const openRule = useCallback((ruleId: string) => {
+    setActiveRuleIdToHighlight(ruleId);
+    setIsRulesDrawerOpen(true);
+  }, []);
 
   // Save changes to localStorage
   useEffect(() => {
@@ -550,6 +565,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deliverJob,
         history,
         clients,
+        isRulesDrawerOpen,
+        setIsRulesDrawerOpen,
+        activeRuleIdToHighlight,
+        openRule,
         user: { name: 'Ane García', role: 'Técnica de accesibilidad', initials: 'AG' },
         resetAllDemoData,
       }}

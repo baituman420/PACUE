@@ -52,6 +52,39 @@ export interface Speaker {
   role?: string;          // optional description e.g. 'Portavoz'
 }
 
+export type RuleLevel = 'general' | 'client' | 'project';
+
+export type RuleCategory = 
+  | 'puntuacion'
+  | 'mayusculas'
+  | 'numeros_fechas'
+  | 'identificacion_hablantes'
+  | 'sonidos_no_verbales'
+  | 'musica_canciones'
+  | 'segmentacion_lineas'
+  | 'cortes_sintacticos'
+  | 'velocidad_lectura'
+  | 'caracteres_linea'
+  | 'duracion'
+  | 'convenciones_formato';
+
+export type RuleSeverity = 'bloqueante' | 'advertencia' | 'guia';
+
+export interface WorkRule {
+  id: string;
+  level: RuleLevel;
+  category: RuleCategory;
+  title: string;
+  shortDescription: string;
+  severity: RuleSeverity;
+  correctExample?: string;
+  incorrectExample?: string;
+  autoValidationKey?: string;
+  hasAutoCheck: boolean;
+  clientId?: string;
+  projectId?: string;
+}
+
 export type QCSeverity = 'warning' | 'error';
 
 export type QCWarningType = 
@@ -67,6 +100,7 @@ export interface QCWarning {
   message: string;
   severity: QCSeverity;
   value?: string | number;
+  ruleId?: string; // Enlace directo a WorkRule
 }
 
 export interface SubtitleSegment {

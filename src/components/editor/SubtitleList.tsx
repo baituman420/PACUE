@@ -37,7 +37,8 @@ export const SubtitleList: React.FC = () => {
     togglePlayPause,
     seekVideo,
     setIsPlaying,
-    activeJob
+    activeJob,
+    openRule
   } = useApp();
 
   const [isSpeakerDrawerOpen, setIsSpeakerDrawerOpen] = useState(false);
@@ -658,6 +659,18 @@ export const SubtitleList: React.FC = () => {
                       >
                         <AlertTriangle className="w-2.5 h-2.5" />
                         <span>{w.message}</span>
+                        {w.ruleId && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openRule(w.ruleId!);
+                            }}
+                            className="underline hover:text-white ml-1 text-[9px] font-bold"
+                            title="Ver la regla técnica asociada"
+                          >
+                            [REGLA]
+                          </button>
+                        )}
                       </span>
                     ))}
                     {(!segment.warnings || segment.warnings.length === 0) && (
