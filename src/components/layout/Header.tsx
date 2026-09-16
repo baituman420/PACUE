@@ -1,55 +1,54 @@
 import React from 'react';
-import { RotateCcw, User, Layers, Radio, Sparkles } from 'lucide-react';
+import { RotateCcw, Radio } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const Header: React.FC = () => {
   const { user, activeJob, resetAllDemoData } = useApp();
 
   return (
-    <header className="h-12 bg-broadcast-darkest border-b border-broadcast-border px-4 flex items-center justify-between select-none z-30">
-      {/* Brand Wordmark & Descriptor */}
+    <header className="h-11 bg-broadcast-darkest border-b border-broadcast-border px-4 flex items-center justify-between select-none z-30">
+      {/* Brand & Context */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          {/* Logo mark */}
-          <div className="w-6 h-6 rounded bg-broadcast-accent text-black font-mono font-black text-sm flex items-center justify-center shadow-[0_0_10px_rgba(0,229,255,0.4)]">
+          {/* Logo mark - Calm teal without electric glow */}
+          <div className="w-5 h-5 rounded bg-teal-600/90 text-white font-sans font-bold text-xs flex items-center justify-center">
             P
           </div>
-          <span className="font-mono font-black tracking-widest text-base text-white">
+          <span className="font-sans font-bold tracking-wider text-sm text-broadcast-textPrimary">
             PACUE
           </span>
         </div>
 
-        <span className="text-broadcast-border text-sm">|</span>
+        <span className="text-broadcast-border text-xs">|</span>
 
-        <span className="text-[11px] font-mono tracking-wider text-broadcast-textMuted uppercase hidden sm:inline">
-          Subtitle Production Workspace
+        <span className="text-xs text-broadcast-textMuted hidden sm:inline">
+          Workspace de Subtitulado
         </span>
 
-        {/* Discrete Mundo Escena Demo tag */}
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-broadcast-surface border border-broadcast-border text-broadcast-textMuted hidden md:inline">
-          Demo configurada para Mundo Escena
+        {/* Discrete Mundo Escena tag */}
+        <span className="text-[10px] px-2 py-0.5 rounded bg-broadcast-surface border border-broadcast-border text-broadcast-textMuted hidden md:inline">
+          Mundo Escena
         </span>
       </div>
 
       {/* Right controls: Active status + User profile + Reset */}
-      <div className="flex items-center gap-4">
-        {/* Production Live Status */}
+      <div className="flex items-center gap-3">
+        {/* Production Status */}
         {activeJob && (
-          <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-cyan-950/40 border border-cyan-500/30 text-xs hidden lg:flex">
-            <Radio className="w-3.5 h-3.5 text-broadcast-accent animate-pulse" />
-            <span className="font-mono text-cyan-300 font-semibold">{activeJob.clientName}</span>
-            <span className="text-broadcast-textMuted font-mono">[{activeJob.duration}]</span>
+          <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-broadcast-surface border border-broadcast-border text-xs hidden lg:flex">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+            <span className="text-broadcast-textPrimary font-medium">{activeJob.clientName}</span>
+            <span className="text-broadcast-textMuted font-mono text-[11px]">[{activeJob.duration}]</span>
           </div>
         )}
 
         {/* User profile */}
         <div className="flex items-center gap-2 text-xs">
-          <div className="w-7 h-7 rounded-full bg-broadcast-surface border border-broadcast-border flex items-center justify-center font-mono font-bold text-broadcast-accent text-xs">
+          <div className="w-6 h-6 rounded-full bg-broadcast-surface border border-broadcast-border flex items-center justify-center font-sans font-semibold text-teal-400 text-[11px]">
             {user.initials}
           </div>
           <div className="hidden sm:block text-left leading-tight">
-            <div className="font-bold text-white text-xs">{user.name}</div>
-            <div className="text-[10px] text-broadcast-textMuted">{user.role}</div>
+            <div className="font-medium text-broadcast-textPrimary text-xs">{user.name}</div>
           </div>
         </div>
 
@@ -60,11 +59,11 @@ export const Header: React.FC = () => {
               resetAllDemoData();
             }
           }}
-          title="Reiniciar datos de la demo inicial"
-          className="p-1.5 rounded bg-broadcast-surface hover:bg-broadcast-border border border-broadcast-border text-broadcast-textMuted hover:text-white transition-colors text-xs flex items-center gap-1"
+          title="Reiniciar datos a la configuración inicial"
+          className="p-1 rounded hover:bg-broadcast-surface text-broadcast-textMuted hover:text-white transition-colors text-xs flex items-center gap-1"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span className="hidden md:inline text-[10px] font-mono">Reiniciar demo</span>
+          <span className="hidden md:inline text-[10px]">Reiniciar</span>
         </button>
       </div>
     </header>

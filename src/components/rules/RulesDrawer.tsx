@@ -111,15 +111,15 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-broadcast-border bg-broadcast-darkest flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded bg-broadcast-accent/20 border border-broadcast-accent/50 text-broadcast-accent flex items-center justify-center">
+            <div className="w-7 h-7 rounded bg-teal-950/60 border border-teal-600/40 text-teal-400 flex items-center justify-center">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+                <h2 className="text-sm font-semibold tracking-wide text-white">
                   Reglas del Trabajo
                 </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-broadcast-surface text-cyan-300 font-bold border border-broadcast-border">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-broadcast-surface text-teal-300 font-medium border border-broadcast-border">
                   {activeJob?.clientName || 'RTVE'} SDH
                 </span>
               </div>
@@ -197,11 +197,11 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
 
           {/* Category Dropdown/Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none text-[10px]">
-            <span className="text-broadcast-textMuted font-mono uppercase mr-1">Categoría:</span>
+            <span className="text-broadcast-textMuted font-sans mr-1">Categoría:</span>
             <button
               onClick={() => setCategoryFilter('all')}
-              className={`px-2 py-0.5 rounded ${
-                categoryFilter === 'all' ? 'bg-cyan-950 text-cyan-300 font-bold border border-cyan-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
+              className={`px-2 py-0.5 rounded transition-colors ${
+                categoryFilter === 'all' ? 'bg-teal-950 text-teal-300 font-medium border border-teal-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >
               Todas
@@ -210,8 +210,8 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
-                className={`px-2 py-0.5 rounded whitespace-nowrap ${
-                  categoryFilter === cat ? 'bg-cyan-950 text-cyan-300 font-bold border border-cyan-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
+                className={`px-2 py-0.5 rounded whitespace-nowrap transition-colors ${
+                  categoryFilter === cat ? 'bg-teal-950 text-teal-300 font-medium border border-teal-700/50' : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
                 }`}
               >
                 {categoryLabels[cat] || cat}
@@ -223,7 +223,7 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
         {/* Rules Cards List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin">
           {filteredRules.length === 0 ? (
-            <div className="text-center py-16 text-broadcast-textMuted text-xs font-mono">
+            <div className="text-center py-16 text-broadcast-textMuted text-xs font-sans">
               No hay reglas que coincidan con la búsqueda.
             </div>
           ) : (
@@ -237,33 +237,33 @@ export const RulesDrawer: React.FC<RulesDrawerProps> = ({
                   onClick={() => setSelectedRuleId(rule.id)}
                   className={`p-3.5 rounded-lg border transition-all ${
                     isHighlighted
-                      ? 'border-broadcast-accent bg-broadcast-surface/90 ring-1 ring-broadcast-accent shadow-xl'
+                      ? 'border-teal-500 bg-broadcast-surface shadow-md'
                       : 'border-broadcast-border bg-broadcast-darkest/80 hover:border-broadcast-borderLight'
                   }`}
                 >
                   {/* Top Bar of Rule: Level & Category & Severity */}
                   <div className="flex items-center justify-between gap-2 mb-1.5 text-[10px] font-mono">
                     <div className="flex items-center gap-1.5">
-                      <span className={`px-1.5 py-0.5 rounded font-bold uppercase ${
+                      <span className={`px-1.5 py-0.5 rounded font-medium uppercase ${
                         rule.level === 'general'
-                          ? 'bg-blue-950 text-blue-300 border border-blue-800/40'
+                          ? 'bg-blue-950/60 text-blue-300 border border-blue-800/40'
                           : rule.level === 'client'
-                          ? 'bg-purple-950 text-purple-300 border border-purple-800/40'
-                          : 'bg-emerald-950 text-emerald-300 border border-emerald-800/40'
+                          ? 'bg-purple-950/60 text-purple-300 border border-purple-800/40'
+                          : 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/40'
                       }`}>
                         {rule.level === 'general' ? 'General UNE' : rule.level === 'client' ? `Cliente: ${activeJob?.clientName || 'RTVE'}` : 'Específica Proyecto'}
                       </span>
 
                       <span className="text-broadcast-textMuted">•</span>
 
-                      <span className="text-broadcast-textMuted uppercase">
+                      <span className="text-broadcast-textMuted uppercase font-sans">
                         {categoryLabels[rule.category] || rule.category}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       {rule.hasAutoCheck && (
-                        <span className="px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-700/40 font-bold" title="Esta regla genera advertencias automáticas en el motor QC">
+                        <span className="px-1.5 py-0.5 rounded bg-teal-950/60 text-teal-300 border border-teal-700/40 font-medium" title="Esta regla genera advertencias automáticas en el motor QC">
                           ✓ Auto QC
                         </span>
                       )}

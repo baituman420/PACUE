@@ -9,6 +9,7 @@ import {
 } from '../data/mockData';
 import { evaluateQC } from '../services/qcService';
 import { parseSRT, secondsToDisplayTime, parseAnyTimecodeToSeconds } from '../services/srtService';
+import { WaveformData, extractWaveformFromFile } from '../services/audioWaveformService';
 
 interface AppContextType {
   // Navigation & Jobs
@@ -67,6 +68,15 @@ interface AppContextType {
   setCurrentTime: React.Dispatch<React.SetStateAction<number>>;
   setDuration: (dur: number) => void;
   setIsPlaying: (playing: boolean) => void;
+
+  // Waveform & Audio Extraction State
+  waveformData: WaveformData | null;
+  isExtractingWaveform: boolean;
+  waveformExtractionFailed: boolean;
+  snapToFrames: boolean;
+  setSnapToFrames: (snap: boolean) => void;
+  waveformHeightMode: 'compact' | 'normal' | 'expanded';
+  setWaveformHeightMode: (mode: 'compact' | 'normal' | 'expanded') => void;
 
   // Import / Export / Delivery
   importSRTContent: (srtString: string, fileName?: string) => void;
@@ -157,6 +167,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [duration, setDuration] = useState(2536); // ~42m
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
+
+  // Waveform & Audio Extraction State
+  const [waveformData, setWaveformData] = useState<WaveformData | null>(null);
+  const [isExtractingWaveform, setIsExtractingWaveform] = useState(false);
+  const [waveformExtractionFailed, setWaveformExtractionFailed] = useState(false);
+  const [snapToFrames, setSnapToFrames] = useState<boolean>(true);
+  const [waveformHeightMode, setWaveformHeightMode] = useState<'compact' | 'normal' | 'expanded'>('normal');
 
   // Rules Drawer State
   const [isRulesDrawerOpen, setIsRulesDrawerOpen] = useState(false);
@@ -401,14 +418,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsPlaying(p => !p);
   }, []);
 
-  // Load Real Local Video
-  const loadLocalVideoFile = useCallback((file: File) => {
+  // Load Real Local Video & Extract Real Waveform Safely
+  const loadLocalVideoFile = useCallback(async (file: File) => {
     const localUrl = URL.createObjectURL(file);
     setVideoUrl(localUrl);
     setVideoFileName(file.name);
     setIsLocalVideo(true);
     setCurrentTime(0);
     setIsPlaying(false);
+
+    // Asynchronous Web Audio API waveform extraction with safe fallback
+    setIsExtractingWaveform(true);
+    setWaveformExtractionFailed(false);
+    try {
+      const data = await extractWaveformFromFile(file, 25);
+      if (data) {
+        setWaveformData(data);
+        setWaveformExtractionFailed(false);
+      } else {
+        setWaveformData(null);
+        setWaveformExtractionFailed(true);
+      }
+    } catch (e) {
+      console.warn('Extracción de audio fallida, activando síntesis segura:', e);
+      setWaveformData(null);
+      setWaveformExtractionFailed(true);
+    } finally {
+      setIsExtractingWaveform(false);
+    }
   }, []);
 
   // Import SRT Content
@@ -560,6 +597,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCurrentTime,
         setDuration,
         setIsPlaying,
+        waveformData,
+        isExtractingWaveform,
+        waveformExtractionFailed,
+        snapToFrames,
+        setSnapToFrames,
+        waveformHeightMode,
+        setWaveformHeightMode,
         importSRTContent,
         importJSONContent,
         deliverJob,

@@ -9,29 +9,29 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #090a0c;
-  color: #e3e8f0;
+  background-color: #131518;
+  color: #e2e6ec;
   font-family: 'Inter', sans-serif;
   user-select: none;
 }
 
-/* Custom scrollbars for technical broadcast styling */
+/* Custom scrollbars for warm technical broadcast styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #101216;
+  background: #181b20;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232832;
+  background: #2a303a;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #323946;
+  background: #38414e;
 }
 
 .scrollbar-none::-webkit-scrollbar {

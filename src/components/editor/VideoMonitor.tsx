@@ -227,14 +227,14 @@ export const VideoMonitor: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-broadcast-panel border-r border-broadcast-border select-none">
       {/* Top Monitor Bar */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-broadcast-border bg-broadcast-darkest text-xs">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-broadcast-border bg-broadcast-darkest text-xs font-sans">
         <div className="flex items-center gap-2">
-          <Film className="w-3.5 h-3.5 text-broadcast-accent" />
-          <span className="font-semibold tracking-wider text-broadcast-textPrimary uppercase">
+          <Film className="w-3.5 h-3.5 text-teal-400" />
+          <span className="font-medium text-broadcast-textPrimary">
             Monitor de Referencia
           </span>
-          <span className="text-broadcast-textMuted font-mono">
-            {isLocalVideo ? `[VÍDEO LOCAL: ${videoFileName}]` : `[FEED SIMULADO: ${videoFileName}]`}
+          <span className="text-broadcast-textMuted font-mono text-[11px]">
+            {isLocalVideo ? `[${videoFileName}]` : `[FEED DEMO: ${videoFileName}]`}
           </span>
         </div>
 
@@ -243,8 +243,8 @@ export const VideoMonitor: React.FC = () => {
           <button
             onClick={() => setShowSafeAreas(v => !v)}
             title="Mostrar u ocultar guías de safe-area de broadcast"
-            className={`p-1 rounded flex items-center gap-1 text-[11px] transition-colors ${
-              showSafeAreas ? 'bg-broadcast-accent/20 text-broadcast-accent' : 'text-broadcast-textMuted hover:text-white'
+            className={`px-2 py-0.5 rounded flex items-center gap-1 text-[11px] transition-colors border ${
+              showSafeAreas ? 'bg-teal-950/60 text-teal-300 border-teal-600/40' : 'border-transparent text-broadcast-textMuted hover:text-white'
             }`}
           >
             {showSafeAreas ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -262,9 +262,9 @@ export const VideoMonitor: React.FC = () => {
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Cargar archivo de vídeo local de tu disco para reproducirlo directamente"
-            className="px-2 py-1 rounded bg-broadcast-surface hover:bg-broadcast-border border border-broadcast-border text-broadcast-textPrimary hover:text-broadcast-accent flex items-center gap-1.5 transition-colors text-xs font-medium"
+            className="px-2.5 py-1 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover border border-broadcast-border text-broadcast-textPrimary hover:text-white flex items-center gap-1.5 transition-colors text-xs font-medium"
           >
-            <Upload className="w-3 h-3" />
+            <Upload className="w-3 h-3 text-teal-400" />
             <span>Cargar vídeo local</span>
           </button>
         </div>
@@ -360,15 +360,15 @@ export const VideoMonitor: React.FC = () => {
           <button
             onClick={togglePlayPause}
             title="Reproducir / Pausar (Barra Espaciadora)"
-            className="p-2 rounded bg-broadcast-accent hover:bg-broadcast-accentHover text-black transition-transform active:scale-95 font-bold"
+            className="p-2 rounded bg-teal-600 hover:bg-teal-500 text-white transition-transform active:scale-95 shadow-sm"
           >
-            {isPlaying ? <Pause className="w-4 h-4 fill-black" /> : <Play className="w-4 h-4 fill-black ml-0.5" />}
+            {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
           </button>
 
           <button
             onClick={() => seekVideo(currentTime + 2.0)}
             title="Saltar +2 segundos (L)"
-            className="p-1.5 rounded bg-broadcast-surface hover:bg-broadcast-border text-broadcast-textPrimary hover:text-broadcast-accent transition-colors"
+            className="p-1.5 rounded bg-broadcast-surface hover:bg-broadcast-surfaceHover text-broadcast-textPrimary hover:text-white transition-colors"
           >
             <RotateCw className="w-4 h-4" />
           </button>
@@ -377,7 +377,7 @@ export const VideoMonitor: React.FC = () => {
           <button
             onClick={() => setIsMuted(m => !m)}
             className={`p-1.5 rounded transition-colors ${
-              isMuted ? 'text-broadcast-danger bg-broadcast-surface' : 'text-broadcast-textMuted hover:text-white'
+              isMuted ? 'text-amber-400 bg-broadcast-surface' : 'text-broadcast-textMuted hover:text-white'
             }`}
             title={isMuted ? 'Activar audio' : 'Silenciar audio'}
           >
@@ -385,26 +385,26 @@ export const VideoMonitor: React.FC = () => {
           </button>
         </div>
 
-        {/* Center: Large Precision Timecode */}
+        {/* Center: Precision Timecode (No harsh glow, crisp readable mono) */}
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-center">
-            <span className="text-[9px] font-mono text-broadcast-textMuted uppercase tracking-wider">Timecode Actual</span>
-            <span className="text-lg font-mono font-bold text-broadcast-accent tracking-wider drop-shadow-[0_0_8px_rgba(0,229,255,0.4)]">
+            <span className="text-[10px] text-broadcast-textMuted font-sans">TIMECODE ACTUAL</span>
+            <span className="text-base font-mono font-semibold text-teal-400 tracking-wider">
               {secondsToSMPTE(currentTime, activeJob?.fps || 25)}
             </span>
           </div>
         </div>
 
         {/* Right: Playback Speed selector */}
-        <div className="flex items-center gap-1 text-xs">
-          <span className="text-[10px] text-broadcast-textMuted font-mono mr-1">VEL:</span>
+        <div className="flex items-center gap-1 text-xs font-sans">
+          <span className="text-[10px] text-broadcast-textMuted mr-1">Velocidad:</span>
           {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
             <button
               key={rate}
               onClick={() => setPlaybackRate(rate)}
               className={`px-1.5 py-0.5 rounded text-[11px] font-mono transition-colors ${
                 playbackRate === rate
-                  ? 'bg-broadcast-accent text-black font-semibold'
+                  ? 'bg-teal-600 text-white font-medium shadow-sm'
                   : 'bg-broadcast-surface text-broadcast-textMuted hover:text-white'
               }`}
             >

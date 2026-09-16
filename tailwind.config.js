@@ -9,19 +9,24 @@ export default {
     extend: {
       colors: {
         broadcast: {
-          darkest: '#090a0c',
-          panel: '#101216',
-          surface: '#16191f',
-          border: '#232832',
-          borderLight: '#323946',
-          textMuted: '#798394',
-          textPrimary: '#e3e8f0',
-          accent: '#00e5ff',     // Neon Cyan / Timecode
-          accentHover: '#33ebff',
-          amber: '#ffb300',      // Warnings / Attention
-          danger: '#ff4b4b',     // Errors
-          success: '#00e676',    // Confirmed / QC OK
-          purple: '#b388ff',     // Speaker secondary
+          darkest: '#131518',     // Warm charcoal dark background
+          panel: '#181b20',       // Warm slate panel
+          surface: '#20242b',     // Warm gray surface
+          surfaceHover: '#282e37',
+          border: '#2a303a',      // Soft, calm border
+          borderLight: '#38414e',
+          textMuted: '#8b94a0',   // Calm readable muted text
+          textPrimary: '#e2e6ec', // Warm off-white, anti-glare
+          accent: '#14b8a6',      // Soft teal (foco / selección)
+          accentHover: '#0d9488',
+          accentMuted: '#134e4a',
+          amber: '#d97706',       // Soft amber (warnings)
+          amberMuted: '#78350f',
+          danger: '#b94a3b',      // Soft terracotta (bloqueantes / errores)
+          dangerMuted: '#5c221b',
+          success: '#4d8b68',     // Soft moss green (validado / confirmado)
+          successMuted: '#1c3b28',
+          purple: '#71717a',      // Slate neutral
         }
       },
       fontFamily: {
