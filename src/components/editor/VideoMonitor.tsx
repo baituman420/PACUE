@@ -31,7 +31,6 @@ export const VideoMonitor: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [showSafeAreas, setShowSafeAreas] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -195,96 +194,6 @@ export const VideoMonitor: React.FC = () => {
     return () => cancelAnimationFrame(animFrame);
   }, [isLocalVideo, isPlaying, currentTime, duration, playbackRate, activeJob]);
 
-  // Audio Waveform visualizer simulation on timeline
-  useEffect(() => {
-    const canvas = waveformCanvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    // Dark timeline track
-    ctx.fillStyle = '#101216';
-    ctx.fillRect(0, 0, w, h);
-
-    // Render subtitle segment blocks as colored markers on the timeline
-    segments.forEach(seg => {
-      const startPct = seg.startSeconds / duration;
-      const endPct = seg.endSeconds / duration;
-      const x1 = startPct * w;
-      const x2 = Math.max(x1 + 2, endPct * w);
-      const spk = speakers[seg.speakerId];
-      const isSelected = seg.id === selectedSegment?.id;
-
-      ctx.fillStyle = isSelected 
-        ? '#00e5ff' 
-        : (spk?.color ? `${spk.color}99` : 'rgba(148, 163, 184, 0.4)');
-      ctx.fillRect(x1, 2, x2 - x1, h - 4);
-
-      if (seg.warnings && seg.warnings.length > 0) {
-        ctx.fillStyle = '#ffb300';
-        ctx.fillRect(x1, 0, Math.min(6, x2 - x1), 3);
-      }
-    });
-
-    // Waveform bars simulation
-    const barsCount = Math.floor(w / 3);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-    for (let i = 0; i < barsCount; i++) {
-      const barX = i * 3;
-      const noise = Math.sin(i * 0.15) * Math.cos(i * 0.08) * Math.sin(i * 0.35);
-      const amp = Math.max(4, Math.abs(noise) * (h * 0.7));
-      const barY = (h - amp) / 2;
-      ctx.fillRect(barX, barY, 1.8, amp);
-    }
-
-    // If a segment is selected, render broadcast IN and OUT bracket handles
-    if (selectedSegment) {
-      const inX = (selectedSegment.startSeconds / duration) * w;
-      const outX = (selectedSegment.endSeconds / duration) * w;
-
-      // Glow fill between IN and OUT
-      ctx.fillStyle = 'rgba(0, 229, 255, 0.22)';
-      ctx.fillRect(inX, 0, Math.max(2, outX - inX), h);
-
-      // Bracket [ for IN
-      ctx.fillStyle = '#00e5ff';
-      ctx.fillRect(inX - 1, 0, 2, h);
-      ctx.fillRect(inX - 1, 0, 5, 2);
-      ctx.fillRect(inX - 1, h - 2, 5, 2);
-
-      // Bracket ] for OUT
-      ctx.fillStyle = '#00e5ff';
-      ctx.fillRect(outX - 1, 0, 2, h);
-      ctx.fillRect(outX - 5, 0, 5, 2);
-      ctx.fillRect(outX - 5, h - 2, 5, 2);
-
-      // Mini text tag "IN" and "OUT" if there is enough space
-      if (outX - inX > 28) {
-        ctx.font = 'bold 8px "JetBrains Mono", monospace';
-        ctx.fillStyle = '#00e5ff';
-        ctx.fillText('IN', inX + 3, 10);
-        ctx.fillText('OUT', outX - 18, 10);
-      }
-    }
-
-    // Current playhead cursor
-    const cursorX = (currentTime / duration) * w;
-    ctx.fillStyle = '#00e5ff';
-    ctx.fillRect(cursorX - 1, 0, 2.5, h);
-
-    // Small head triangle
-    ctx.beginPath();
-    ctx.moveTo(cursorX - 5, 0);
-    ctx.lineTo(cursorX + 5, 0);
-    ctx.lineTo(cursorX, 6);
-    ctx.closePath();
-    ctx.fill();
-  }, [segments, speakers, currentTime, duration, selectedSegment]);
-
   // Active Subtitle for current video time
   const activeSubtitle = useMemo(() => {
     return segments.find(
@@ -313,13 +222,6 @@ export const VideoMonitor: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       loadLocalVideoFile(e.target.files[0]);
     }
-  };
-
-  const handleTimelineClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const pct = Math.max(0, Math.min(1, clickX / rect.width));
-    seekVideo(pct * duration);
   };
 
   return (
@@ -441,28 +343,7 @@ export const VideoMonitor: React.FC = () => {
         )}
       </div>
 
-      {/* Interactive Timeline & Waveform */}
-      <div className="px-3 pt-2 pb-1 bg-broadcast-panel border-t border-broadcast-border">
-        <div className="flex items-center justify-between text-[11px] font-mono text-broadcast-textMuted mb-1">
-          <div className="flex items-center gap-2">
-            <span className="text-broadcast-accent font-semibold">{secondsToSMPTE(currentTime, 25)}</span>
-            <span>/</span>
-            <span>{secondsToDisplayTime(duration)}</span>
-          </div>
-          <div className="flex items-center gap-2 text-[10px]">
-            <span className="text-broadcast-textMuted">Rastreo de onda & marcadores</span>
-          </div>
-        </div>
 
-        <canvas
-          ref={waveformCanvasRef}
-          width={800}
-          height={32}
-          onClick={handleTimelineClick}
-          className="w-full h-8 rounded bg-broadcast-darkest cursor-pointer border border-broadcast-border hover:border-broadcast-borderLight transition-colors"
-          title="Haz clic para posicionar el cabezal de vídeo"
-        />
-      </div>
 
       {/* Control Transport Deck */}
       <div className="flex items-center justify-between px-3 py-2 bg-broadcast-darkest border-t border-broadcast-border">
